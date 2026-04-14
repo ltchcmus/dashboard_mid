@@ -1,0 +1,4 @@
+# Thêm các ignore mà trên máy mọi người không muốn pushlish lên git
+__pycache__/
+*.pyc
+*.pyd
