@@ -742,6 +742,7 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 				.head(15)
 				.sort_values("diem_trung_binh", ascending=True)
 			)
+			genre_stat["phuong_sai"] = genre_stat["do_lech_chuan"] ** 2
 			fig_err = go.Figure(
 				go.Bar(
 					x=genre_stat["diem_trung_binh"],
@@ -749,16 +750,16 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 					orientation="h",
 					error_x={"type": "data", "array": genre_stat["do_lech_chuan"], "visible": True},
 					marker={
-						"color": genre_stat["diem_trung_binh"],
+						"color": genre_stat["phuong_sai"],
 						"colorscale": DIVERGE_QUALITY,
 						"showscale": True,
-						"colorbar": {"title": "Điểm TB"},
+						"colorbar": {"title": "Phương sai"},
 					},
 					hovertemplate=(
 						"Thể loại: %{y}<br>Điểm TB: %{x:.2f}<br>Độ lệch chuẩn: %{error_x.array:.2f}"  # noqa: E501
-						"<br>Số phim: %{customdata}<extra></extra>"
+						"<br>Phương sai: %{customdata[0]:.3f}<br>Số phim: %{customdata[1]}<extra></extra>"
 					),
-					customdata=genre_stat[["so_luong"]],
+					customdata=genre_stat[["phuong_sai", "so_luong"]],
 				)
 			)
 			fig_err.update_layout(
