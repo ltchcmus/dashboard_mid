@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -293,14 +294,26 @@ def ve_tab_toan_canh(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame,
 	if qg_dem.empty:
 		st.info("Không có dữ liệu quốc gia sau khi lọc.")
 	else:
+		qg_dem["Số lượng phim (log10)"] = qg_dem["Số lượng phim"].apply(lambda v: math.log10(v))
+		log_min = int(qg_dem["Số lượng phim (log10)"].min())
+		log_max = int(math.ceil(qg_dem["Số lượng phim (log10)"].max()))
+		tick_vals = list(range(log_min, log_max + 1))
+		tick_text = [f"{10 ** p:,}" for p in tick_vals]
+
 		fig_map = px.choropleth(
 			qg_dem,
 			locations="Quốc gia",
 			locationmode="country names",
-			color="Số lượng phim",
+			color="Số lượng phim (log10)",
 			custom_data=["Quốc gia"],
 			color_continuous_scale=["#FFD6D9", NETFLIX_RED],
 			title="Những quốc gia nào là công xưởng nội dung chính?",
+			hover_data={"Số lượng phim": True, "Số lượng phim (log10)": False},
+		)
+		fig_map.update_coloraxes(
+			colorbar_title="Số lượng phim",
+			colorbar_tickvals=tick_vals,
+			colorbar_ticktext=tick_text,
 		)
 		fig_map.update_geos(bgcolor=CHART_BG)
 		fig_map.update_layout(margin={"t": 60, "l": 0, "r": 0, "b": 0}, height=560)
@@ -399,18 +412,29 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 				return "Nhóm còn lại"
 
 			scatter_df["Nhóm phim"] = scatter_df.apply(gan_nhom, axis=1)
+			scatter_plot_df = scatter_df[scatter_df["popularity"] > 0].copy()
 
-			fig_scatter = px.scatter(
-				scatter_df,
+			if scatter_plot_df.empty:
+				st.info("Không có dữ liệu popularity > 0 để hiển thị trên trục log.")
+			else:
+				so_diem_loai = len(scatter_df) - len(scatter_plot_df)
+				if so_diem_loai > 0:
+					st.caption(f"Đã ẩn {so_diem_loai} phim có độ phổ biến <= 0 để hiển thị trục log.")
+
+				fig_scatter = px.scatter(
+					scatter_plot_df,
 				x="popularity",
 				y="vote_average",
 				color="Nhóm phim",
 				color_discrete_sequence=PALETTE,
 				hover_name="title",
+				opacity=0.6,
 				title="Mối quan hệ giữa độ nổi tiếng và điểm số thực tế",
 				labels={"popularity": "Độ phổ biến", "vote_average": "Điểm đánh giá trung bình"},
 			)
-			st.plotly_chart(ap_dung_giao_dien_plotly(fig_scatter), use_container_width=True)
+				fig_scatter.update_xaxes(type="log")
+				fig_scatter.update_traces(marker={"size": 8})
+				st.plotly_chart(ap_dung_giao_dien_plotly(fig_scatter), use_container_width=True)
 
 	with c2:
 		corr_cols = ["popularity", "vote_count", "vote_average", "budget", "revenue"]
@@ -647,17 +671,17 @@ def main() -> None:
 		}}
 		[data-testid='stHeader'] {{
 			background: {NETFLIX_RED} !important;
-			height: 92px !important;
-			min-height: 92px !important;
+			height: 72px !important;
+			min-height: 72px !important;
 			display: flex !important;
 			align-items: center !important;
 		}}
 		[data-testid='stHeader']::before {{
 			content: "Netflix Data Storytelling Dashboard";
 			color: #FFFFFF !important;
-			font-size: 2.75rem;
+			font-size: 2.2rem;
 			font-weight: 700;
-			line-height: 1.2;
+			line-height: 1.05;
 			margin-left: 1rem;
 			white-space: nowrap;
 		}}
@@ -668,7 +692,7 @@ def main() -> None:
 			background: transparent !important;
 		}}
 		[data-testid='stMainBlockContainer'] {{
-			padding-top: 5.5rem;
+			padding-top: 4.8rem;
 		}}
 		h1, h2, h3 {{
 			color: {NETFLIX_RED};
