@@ -688,41 +688,38 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 		if hist_df.empty:
 			thong_bao_khong_co_du_lieu()
 		else:
-			hist_df["Nhóm ngân sách"] = pd.cut(
-				hist_df["budget"],
-				bins=[-np.inf, 20_000_000, 80_000_000, np.inf],
-				labels=["Thấp", "Trung bình", "Cao"],
+			# Rank before qcut to reduce bin drops when many budget values are duplicated.
+			budget_rank = hist_df["budget"].rank(method="first")
+			ma_phan_vi = pd.qcut(budget_rank, q=4, labels=False)
+			so_nhom_ngan_sach = int(ma_phan_vi.max()) + 1
+			nhan_phan_vi = ["Q1 (Thấp)", "Q2", "Q3", "Q4 (Cao)"]
+			hist_df["Nhóm ngân sách (tứ phân vị)"] = ma_phan_vi.map(
+				{i: nhan_phan_vi[i] for i in range(so_nhom_ngan_sach)}
 			)
 			hist_df["Nhóm điểm số"] = pd.cut(
 				hist_df["vote_average"],
 				bins=[-np.inf, 6, 7.5, np.inf],
 				labels=["<6", "6-7.5", ">7.5"],
 			)
-			hist_df["roi"] = np.where(
-				(hist_df["budget"] > 5_000) & (hist_df["revenue"] > 0),
-				(hist_df["revenue"] - hist_df["budget"]) / hist_df["budget"],
-				np.nan,
-			)
 			agg = (
-				hist_df.groupby(["Nhóm ngân sách", "Nhóm điểm số"], observed=True, as_index=False)
-				.agg(So_luong=("show_id", "nunique"), ROI_trung_binh=("roi", "mean"))
+				hist_df.groupby(["Nhóm ngân sách (tứ phân vị)", "Nhóm điểm số"], observed=True, as_index=False)
+				.agg(So_luong=("show_id", "nunique"))
 			)
 			fig_hist = px.density_heatmap(
 				agg,
-				x="Nhóm ngân sách",
+				x="Nhóm ngân sách (tứ phân vị)",
 				y="Nhóm điểm số",
 				z="So_luong",
 				histfunc="sum",
 				text_auto=True,
 				color_continuous_scale=SEQ_COUNT,
-				title="Tương quan lợi nhuận (ROI) theo điểm số và ngân sách",
+				title="Phân bố số lượng phim theo điểm số và ngân sách",
 				labels={
-					"Nhóm ngân sách": "Nhóm ngân sách",
+					"Nhóm ngân sách (tứ phân vị)": "Nhóm ngân sách (tứ phân vị)",
 					"Nhóm điểm số": "Nhóm điểm số",
 					"So_luong": "Tổng số phim",
-					"ROI_trung_binh": "ROI trung bình",
 				},
-				hover_data={"ROI_trung_binh": ":.2f", "So_luong": True},
+				hover_data={"So_luong": True},
 			)
 			fig_hist.update_coloraxes(colorbar_title_text="Tổng số phim")
 			st.plotly_chart(ap_dung_giao_dien_plotly(fig_hist), width="stretch")
