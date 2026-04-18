@@ -72,12 +72,22 @@ def ap_dung_giao_dien_plotly(fig):
 		template="plotly_white",
 		paper_bgcolor=CHART_BG,
 		plot_bgcolor=CHART_BG,
-		font={"color": TEXT_DARK},
-		title={"font": {"color": NETFLIX_RED, "size": 18}, "x": 0.5, "xanchor": "center"},
+		font={"family": "Inter, system-ui, sans-serif", "size": 13, "color": TEXT_DARK},
+		title={"font": {"color": NETFLIX_RED, "size": 20}, "x": 0.5, "xanchor": "center"},
 		clickmode="event+select",
-		legend={"font": {"color": TEXT_DARK}, "title": {"font": {"color": TEXT_DARK}}},
-		xaxis={"tickfont": {"color": TEXT_DARK}, "title": {"font": {"color": TEXT_DARK}}},
-		yaxis={"tickfont": {"color": TEXT_DARK}, "title": {"font": {"color": TEXT_DARK}}},
+		legend={
+			"font": {"color": TEXT_DARK, "size": 13},
+			"title": {"font": {"color": TEXT_DARK, "size": 13}},
+		},
+		xaxis={
+			"tickfont": {"color": TEXT_DARK, "size": 12},
+			"title": {"font": {"color": TEXT_DARK, "size": 13}},
+		},
+		yaxis={
+			"tickfont": {"color": TEXT_DARK, "size": 12},
+			"title": {"font": {"color": TEXT_DARK, "size": 13}},
+		},
+		hoverlabel={"font_size": 12, "font_family": "Inter, system-ui, sans-serif"},
 	)
 	fig.update_coloraxes(colorbar_tickfont_color=TEXT_DARK, colorbar_title_font_color=TEXT_DARK)
 	return fig
@@ -88,27 +98,77 @@ def thong_bao_khong_co_du_lieu() -> None:
 
 
 def khoi_tao_loc_tuong_tac() -> None:
-	for key in ["selected_countries", "selected_languages", "selected_genres"]:
+	for key in ["quoc_gia_chon", "ngon_ngu_chon", "the_loai_chon"]:
 		if key not in st.session_state:
 			st.session_state[key] = []
+	if "pending_filter_updates" not in st.session_state:
+		st.session_state["pending_filter_updates"] = {}
+	if "chart_event_signature" not in st.session_state:
+		st.session_state["chart_event_signature"] = {
+			"quoc_gia_chon": None,
+			"ngon_ngu_chon": None,
+			"the_loai_chon": None,
+		}
+	if "chart_event_skip_once" not in st.session_state:
+		st.session_state["chart_event_skip_once"] = {
+			"quoc_gia_chon": False,
+			"ngon_ngu_chon": False,
+			"the_loai_chon": False,
+		}
+
+
+def ap_dung_pending_filter_updates() -> None:
+	pending = st.session_state.get("pending_filter_updates", {})
+	if not pending:
+		return
+	for key, values in pending.items():
+		st.session_state[key] = values
+	st.session_state["pending_filter_updates"] = {}
 
 
 def trich_gia_tri_tu_su_kien_plotly(su_kien, truong_du_lieu: list[str]) -> list[str] | None:
-	if not isinstance(su_kien, dict):
+	if su_kien is None:
 		return None
-	selection = su_kien.get("selection")
+
+	selection = None
+	if isinstance(su_kien, dict):
+		selection = su_kien.get("selection")
+	elif hasattr(su_kien, "selection"):
+		selection = getattr(su_kien, "selection")
+	elif hasattr(su_kien, "get"):
+		selection = su_kien.get("selection")
+
 	if selection is None:
 		return None
-	points = selection.get("points", [])
+
+	points = []
+	if isinstance(selection, dict):
+		points = selection.get("points", [])
+	elif hasattr(selection, "get"):
+		points = selection.get("points", [])
+	elif hasattr(selection, "points"):
+		points = getattr(selection, "points") or []
+
 	if not points:
 		return []
 
 	ket_qua: list[str] = []
 	for p in points:
+		if not isinstance(p, dict) and hasattr(p, "get"):
+			p = dict(p)
 		for truong in truong_du_lieu:
-			gia_tri = p.get(truong)
-			if isinstance(gia_tri, (list, tuple)):
-				gia_tri = gia_tri[0] if gia_tri else None
+			gia_tri = p.get(truong) if isinstance(p, dict) else None
+			while isinstance(gia_tri, (list, tuple, np.ndarray)):
+				if isinstance(gia_tri, np.ndarray):
+					if gia_tri.size == 0:
+						gia_tri = None
+						break
+					gia_tri = gia_tri.flat[0]
+				else:
+					if not gia_tri:
+						gia_tri = None
+						break
+					gia_tri = gia_tri[0]
 			if gia_tri is None:
 				continue
 			chuoi = str(gia_tri).strip()
@@ -118,13 +178,26 @@ def trich_gia_tri_tu_su_kien_plotly(su_kien, truong_du_lieu: list[str]) -> list[
 	return sorted(set(ket_qua))
 
 
-def cap_nhat_loc_tuong_tac_tu_chart(su_kien, key_state: str, truong_du_lieu: list[str]) -> bool:
-	gia_tri = trich_gia_tri_tu_su_kien_plotly(su_kien, truong_du_lieu)
-	if gia_tri is not None:
-		if st.session_state.get(key_state, []) != gia_tri:
-			st.session_state[key_state] = gia_tri
-			return True
-	return False
+def cap_nhat_loc_toggle(key_state: str, new_items: list[str]) -> bool:
+	if not new_items:
+		return False
+	hien_tai = list(st.session_state.get(key_state, []))
+	pending = st.session_state.get("pending_filter_updates", {})
+	if key_state in pending:
+		hien_tai = list(pending[key_state])
+	changed = False
+	for item in new_items:
+		if item in hien_tai:
+			hien_tai.remove(item)
+			changed = True
+		else:
+			hien_tai.append(item)
+			changed = True
+	if changed:
+		pending = dict(st.session_state.get("pending_filter_updates", {}))
+		pending[key_state] = hien_tai
+		st.session_state["pending_filter_updates"] = pending
+	return changed
 
 
 def dong_bo_loc_tuong_tac_tu_tab1(
@@ -133,26 +206,33 @@ def dong_bo_loc_tuong_tac_tu_tab1(
 	gia_tri_genre: list[str] | None,
 ) -> None:
 	de_xuat = {
-		"selected_countries": gia_tri_qg,
-		"selected_languages": gia_tri_lang,
-		"selected_genres": gia_tri_genre,
+		"quoc_gia_chon": gia_tri_qg,
+		"ngon_ngu_chon": gia_tri_lang,
+		"the_loai_chon": gia_tri_genre,
 	}
-	de_xuat_khong_none = {k: v for k, v in de_xuat.items() if v is not None}
-	if not de_xuat_khong_none:
-		return
-
-	if all(v == [] for v in de_xuat_khong_none.values()) and len(de_xuat_khong_none) > 1:
-		return
-
-	has_non_empty = any(v != [] for v in de_xuat_khong_none.values())
-
 	changed = False
-	for key, value in de_xuat_khong_none.items():
-		if value == [] and has_non_empty and st.session_state.get(key):
+	chart_sig = dict(st.session_state.get("chart_event_signature", {}))
+	chart_skip_once = dict(st.session_state.get("chart_event_skip_once", {}))
+	for key, values in de_xuat.items():
+		if values is None:
 			continue
-		if st.session_state.get(key, []) != value:
-			st.session_state[key] = value
+		if len(values) == 0:
+			chart_sig[key] = None
+			chart_skip_once[key] = False
+			continue
+
+		sig = "|".join(sorted(values))
+		if chart_sig.get(key) == sig and chart_skip_once.get(key, False):
+			# Skip exactly one immediate stale rerun event from Plotly selection state.
+			chart_skip_once[key] = False
+			continue
+		if cap_nhat_loc_toggle(key, values):
+			chart_sig[key] = sig
+			chart_skip_once[key] = True
 			changed = True
+
+	st.session_state["chart_event_signature"] = chart_sig
+	st.session_state["chart_event_skip_once"] = chart_skip_once
 
 	if changed:
 		st.rerun()
@@ -165,18 +245,18 @@ def ap_dung_loc_tuong_tac(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 	movies_loc = movies_base.copy()
 
-	countries_chon = st.session_state.get("selected_countries", [])
+	countries_chon = st.session_state.get("quoc_gia_chon", [])
 	if countries_chon:
 		show_ids_qg = du_lieu["countries"][
 			du_lieu["countries"]["country_name"].isin(countries_chon)
 		]["show_id"].unique()
 		movies_loc = movies_loc[movies_loc["show_id"].isin(show_ids_qg)]
 
-	languages_chon = st.session_state.get("selected_languages", [])
+	languages_chon = st.session_state.get("ngon_ngu_chon", [])
 	if languages_chon:
 		movies_loc = movies_loc[movies_loc["language_name"].isin(languages_chon)]
 
-	genres_chon = st.session_state.get("selected_genres", [])
+	genres_chon = st.session_state.get("the_loai_chon", [])
 	if genres_chon:
 		show_ids_genre = du_lieu["genres_exploded"][
 			du_lieu["genres_exploded"]["the_loai"].isin(genres_chon)
@@ -185,25 +265,6 @@ def ap_dung_loc_tuong_tac(
 
 	genres_loc = genres_base[genres_base["show_id"].isin(movies_loc["show_id"])]
 	return movies_loc, genres_loc
-
-
-def hien_thi_trang_thai_loc_tuong_tac() -> None:
-	with st.sidebar:
-		st.markdown("### Bộ lọc tương tác từ biểu đồ")
-		if st.button("Xóa lọc tương tác", use_container_width=True):
-			st.session_state["selected_countries"] = []
-			st.session_state["selected_languages"] = []
-			st.session_state["selected_genres"] = []
-			st.rerun()
-
-		qg = st.session_state.get("selected_countries", [])
-		lang = st.session_state.get("selected_languages", [])
-		genre = st.session_state.get("selected_genres", [])
-
-		st.caption("Quốc gia: " + (", ".join(qg) if qg else "(không chọn)"))
-		st.caption("Ngôn ngữ: " + (", ".join(lang) if lang else "(không chọn)"))
-		st.caption("Thể loại: " + (", ".join(genre) if genre else "(không chọn)"))
-
 
 @st.cache_data(show_spinner=False)
 def tai_du_lieu() -> dict[str, pd.DataFrame]:
@@ -249,6 +310,7 @@ def bo_loc_toan_cuc(du_lieu: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, pd.
 	movies = du_lieu["movies"].copy()
 	genres_exploded = du_lieu["genres_exploded"]
 	countries = du_lieu["countries"]
+	ap_dung_pending_filter_updates()
 
 	nam_min = int(movies["release_year"].min())
 	nam_max = int(movies["release_year"].max())
@@ -258,28 +320,33 @@ def bo_loc_toan_cuc(du_lieu: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, pd.
 		"Năm phát hành",
 		min_value=nam_min,
 		max_value=nam_max,
+		key="khoang_nam_chon",
 		value=(nam_min, nam_max),
 	)
 
 	danh_sach_quoc_gia = sorted(countries["country_name"].dropna().unique().tolist())
-	quoc_gia_chon = st.sidebar.selectbox("Quốc gia", options=["Tất cả"] + danh_sach_quoc_gia)
+	st.sidebar.multiselect("Quốc gia", options=danh_sach_quoc_gia, key="quoc_gia_chon")
 
 	danh_sach_the_loai = sorted(genres_exploded["the_loai"].dropna().unique().tolist())
-	the_loai_chon = st.sidebar.multiselect("Thể loại", options=danh_sach_the_loai)
+	st.sidebar.multiselect("Thể loại", options=danh_sach_the_loai, key="the_loai_chon")
 
 	danh_sach_ngon_ngu = sorted(movies["language_name"].dropna().unique().tolist())
-	ngon_ngu_chon = st.sidebar.selectbox("Ngôn ngữ", options=["Tất cả"] + danh_sach_ngon_ngu)
+	st.sidebar.multiselect("Ngôn ngữ", options=danh_sach_ngon_ngu, key="ngon_ngu_chon")
+
+	quoc_gia_chon = st.session_state.get("quoc_gia_chon", [])
+	the_loai_chon = st.session_state.get("the_loai_chon", [])
+	ngon_ngu_chon = st.session_state.get("ngon_ngu_chon", [])
 
 	loc_theo_nam = movies[
 		movies["release_year"].between(khoang_nam[0], khoang_nam[1], inclusive="both")
 	]
 
-	if quoc_gia_chon != "Tất cả":
-		show_ids_quoc_gia = countries[countries["country_name"] == quoc_gia_chon]["show_id"].unique()
+	if quoc_gia_chon:
+		show_ids_quoc_gia = countries[countries["country_name"].isin(quoc_gia_chon)]["show_id"].unique()
 		loc_theo_nam = loc_theo_nam[loc_theo_nam["show_id"].isin(show_ids_quoc_gia)]
 
-	if ngon_ngu_chon != "Tất cả":
-		loc_theo_nam = loc_theo_nam[loc_theo_nam["language_name"] == ngon_ngu_chon]
+	if ngon_ngu_chon:
+		loc_theo_nam = loc_theo_nam[loc_theo_nam["language_name"].isin(ngon_ngu_chon)]
 
 	if the_loai_chon:
 		show_ids_the_loai = genres_exploded[
@@ -300,9 +367,9 @@ def hien_thi_kpi(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None:
 	else:
 		top_genre = "N/A"
 
-	roi = movies_loc[movies_loc["budget"] > 0].copy()
+	roi = movies_loc[(movies_loc["budget"] > 5_000) & (movies_loc["revenue"] > 0)].copy()
 	roi["roi"] = np.where(
-		roi["budget"] > 0,
+		(roi["budget"] > 5_000) & (roi["revenue"] > 0),
 		(roi["revenue"] - roi["budget"]) / roi["budget"],
 		np.nan,
 	)
@@ -318,75 +385,157 @@ def hien_thi_kpi(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None:
 def ve_tab_toan_canh(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None:
 	st.subheader("Toàn cảnh Netflix toàn cầu")
 
+	movies_map = du_lieu["movies"].copy()
+	genres_all = du_lieu["genres_exploded"]
 	countries = du_lieu["countries"]
-	countries_loc = countries[countries["show_id"].isin(movies_loc["show_id"])]
+	khoang_nam = st.session_state.get(
+		"khoang_nam_chon",
+		(int(movies_map["release_year"].min()), int(movies_map["release_year"].max())),
+	)
+	movies_map = movies_map[
+		movies_map["release_year"].between(khoang_nam[0], khoang_nam[1], inclusive="both")
+	]
+
+	ngon_ngu_chon = st.session_state.get("ngon_ngu_chon", [])
+	if ngon_ngu_chon:
+		movies_map = movies_map[movies_map["language_name"].isin(ngon_ngu_chon)]
+
+	the_loai_chon = st.session_state.get("the_loai_chon", [])
+	if the_loai_chon:
+		show_ids_the_loai = genres_all[genres_all["the_loai"].isin(the_loai_chon)]["show_id"].unique()
+		movies_map = movies_map[movies_map["show_id"].isin(show_ids_the_loai)]
+
+	countries_loc = countries[countries["show_id"].isin(movies_map["show_id"])]
 	qg_dem = (
 		countries_loc.groupby("country_name", as_index=False)["show_id"]
 		.nunique()
 		.rename(columns={"country_name": "Quốc gia", "show_id": "Số lượng phim"})
 	)
+	countries_chon = st.session_state.get("quoc_gia_chon", [])
 	gia_tri_qg = None
 
 	if qg_dem.empty:
 		st.info("Không có dữ liệu quốc gia sau khi lọc.")
 	else:
 		qg_dem["Số lượng phim (log10)"] = qg_dem["Số lượng phim"].apply(lambda v: math.log10(v))
-		log_min = int(qg_dem["Số lượng phim (log10)"].min())
-		log_max = int(math.ceil(qg_dem["Số lượng phim (log10)"].max()))
-		tick_vals = list(range(log_min, log_max + 1))
-		tick_text = [f"{10 ** p:,}" for p in tick_vals]
+		if countries_chon:
+			qg_dem["gia_tri_mau"] = -1.0
+			selected_mask = qg_dem["Quốc gia"].isin(countries_chon)
+			qg_dem.loc[selected_mask, "gia_tri_mau"] = qg_dem.loc[selected_mask, "Số lượng phim (log10)"]
+			selected_vals = qg_dem.loc[selected_mask, "gia_tri_mau"]
+			color_min = -1.0
+			color_max = float(selected_vals.max()) if not selected_vals.empty else 1.0
+			if color_max <= color_min:
+				color_max = color_min + 1.0
 
-		fig_map = px.choropleth(
-			qg_dem,
-			locations="Quốc gia",
-			locationmode="country names",
-			color="Số lượng phim (log10)",
-			custom_data=["Quốc gia"],
-			color_continuous_scale=SEQ_COUNT,
-			title="Phân bố phim theo quốc gia",
-			hover_data={"Số lượng phim": True, "Số lượng phim (log10)": False},
+			fig_map = px.choropleth(
+				qg_dem,
+				locations="Quốc gia",
+				locationmode="country names",
+				color="gia_tri_mau",
+				custom_data=["Quốc gia"],
+				color_continuous_scale=[
+					[0.00, "#E5E7EB"],
+					[0.22, "#FEE2E2"],
+					[0.60, "#EF4444"],
+					[1.00, "#80060B"],
+				],
+				range_color=[color_min, color_max],
+				title="Phân bố phim theo quốc gia",
+				hover_data={"Số lượng phim": True, "gia_tri_mau": False},
+			)
+			fig_map.update_coloraxes(showscale=False)
+		else:
+			log_min = int(qg_dem["Số lượng phim (log10)"].min())
+			log_max = int(math.ceil(qg_dem["Số lượng phim (log10)"].max()))
+			tick_vals = list(range(log_min, log_max + 1))
+			tick_text = [f"{10 ** p:,}" for p in tick_vals]
+
+			fig_map = px.choropleth(
+				qg_dem,
+				locations="Quốc gia",
+				locationmode="country names",
+				color="Số lượng phim (log10)",
+				custom_data=["Quốc gia"],
+				color_continuous_scale=SEQ_COUNT,
+				title="Phân bố phim theo quốc gia",
+				hover_data={"Số lượng phim": True, "Số lượng phim (log10)": False},
+			)
+			fig_map.update_coloraxes(
+				colorbar_title="Số lượng phim",
+				colorbar_tickvals=tick_vals,
+				colorbar_ticktext=tick_text,
+			)
+		fig_map.update_geos(
+			bgcolor=CHART_BG,
+			showcoastlines=False,
+			showframe=False,
+			projection_scale=1.12,
 		)
-		fig_map.update_coloraxes(
-			colorbar_title="Số lượng phim",
-			colorbar_tickvals=tick_vals,
-			colorbar_ticktext=tick_text,
-		)
-		fig_map.update_geos(bgcolor=CHART_BG)
-		fig_map.update_layout(margin={"t": 60, "l": 0, "r": 0, "b": 0}, height=560)
+		fig_map.update_layout(margin={"t": 48, "l": 0, "r": 0, "b": 0}, height=760)
+		map_key_suffix = abs(hash(tuple(sorted(st.session_state.get("quoc_gia_chon", [])))))
 		su_kien_map = st.plotly_chart(
 			ap_dung_giao_dien_plotly(fig_map),
 			width="stretch",
-			key="chart_map_quoc_gia",
+			key=f"chart_map_quoc_gia_{map_key_suffix}",
 			on_select="rerun",
 		)
-		gia_tri_qg = trich_gia_tri_tu_su_kien_plotly(su_kien_map, ["customdata", "location"])
+		gia_tri_qg = trich_gia_tri_tu_su_kien_plotly(su_kien_map, ["customdata"])
 
 	c1, c2 = st.columns(2)
 
 	with c1:
 		gia_tri_lang = None
+		movies_lang = du_lieu["movies"].copy()
+		movies_lang = movies_lang[
+			movies_lang["release_year"].between(khoang_nam[0], khoang_nam[1], inclusive="both")
+		]
+		quoc_gia_chon = st.session_state.get("quoc_gia_chon", [])
+		if quoc_gia_chon:
+			show_ids_qg = countries[countries["country_name"].isin(quoc_gia_chon)]["show_id"].unique()
+			movies_lang = movies_lang[movies_lang["show_id"].isin(show_ids_qg)]
+
+		if the_loai_chon:
+			show_ids_the_loai = genres_all[genres_all["the_loai"].isin(the_loai_chon)]["show_id"].unique()
+			movies_lang = movies_lang[movies_lang["show_id"].isin(show_ids_the_loai)]
+
 		ngon_ngu = (
-			movies_loc.groupby("language_name", as_index=False)["show_id"]
+			movies_lang.groupby("language_name", as_index=False)["show_id"]
 			.nunique()
 			.rename(columns={"language_name": "Ngôn ngữ", "show_id": "Số lượng phim"})
 		)
 		if ngon_ngu.empty:
 			st.info("Không có dữ liệu ngôn ngữ sau khi lọc.")
 		else:
+			ngon_ngu["Số lượng phim (log10)"] = ngon_ngu["Số lượng phim"].apply(lambda v: math.log10(v))
+			log_min_lang = int(ngon_ngu["Số lượng phim (log10)"].min())
+			log_max_lang = int(math.ceil(ngon_ngu["Số lượng phim (log10)"].max()))
+			tick_vals_lang = list(range(log_min_lang, log_max_lang + 1))
+			tick_text_lang = [f"{10 ** p:,}" for p in tick_vals_lang]
+
 			fig_tree = px.treemap(
 				ngon_ngu,
 				path=["Ngôn ngữ"],
 				values="Số lượng phim",
-				color="Số lượng phim",
+				color="Số lượng phim (log10)",
 				custom_data=["Ngôn ngữ"],
 				color_continuous_scale=SEQ_COUNT,
 				title="Tỉ trọng phim theo ngôn ngữ hiển thị",
+				hover_data={"Số lượng phim": True, "Số lượng phim (log10)": False},
+			)
+			# Keep treemap clickable for filtering without drilling into a single language tile.
+			fig_tree.update_traces(maxdepth=1, pathbar={"visible": False}, root_color=CHART_BG)
+			fig_tree.update_coloraxes(
+				colorbar_title="Số lượng phim",
+				colorbar_tickvals=tick_vals_lang,
+				colorbar_ticktext=tick_text_lang,
 			)
 			fig_tree.update_layout(margin={"t": 60, "l": 0, "r": 0, "b": 0}, height=420)
+			lang_key_suffix = abs(hash(tuple(sorted(st.session_state.get("ngon_ngu_chon", [])))))
 			su_kien_lang = st.plotly_chart(
 				ap_dung_giao_dien_plotly(fig_tree),
 				width="stretch",
-				key="chart_tree_ngon_ngu",
+				key=f"chart_tree_ngon_ngu_{lang_key_suffix}",
 				on_select="rerun",
 			)
 			gia_tri_lang = trich_gia_tri_tu_su_kien_plotly(su_kien_lang, ["customdata", "label", "id"])
@@ -464,7 +613,7 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 			q4_df[["show_id", "popularity", "budget", "revenue"]], on="show_id", how="left"
 		)
 		hq_detail["roi"] = np.where(
-			hq_detail["budget"] > 0,
+			(hq_detail["budget"] > 5_000) & (hq_detail["revenue"] > 0),
 			(hq_detail["revenue"] - hq_detail["budget"]) / hq_detail["budget"],
 			np.nan,
 		)
@@ -535,7 +684,7 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 
 	with q5_col:
 		hist_df = movies_loc[["show_id", "budget", "vote_average", "revenue"]].dropna().copy()
-		hist_df = hist_df[hist_df["budget"] > 0]
+		hist_df = hist_df[(hist_df["budget"] > 5_000) & (hist_df["revenue"] > 0)]
 		if hist_df.empty:
 			thong_bao_khong_co_du_lieu()
 		else:
@@ -550,7 +699,7 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 				labels=["<6", "6-7.5", ">7.5"],
 			)
 			hist_df["roi"] = np.where(
-				hist_df["budget"] > 0,
+				(hist_df["budget"] > 5_000) & (hist_df["revenue"] > 0),
 				(hist_df["revenue"] - hist_df["budget"]) / hist_df["budget"],
 				np.nan,
 			)
@@ -618,9 +767,9 @@ def ve_tab_tai_chinh(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None
 	c1, c2 = st.columns(2)
 
 	with c1:
-		roi_df = movies_loc[(movies_loc["budget"] > 0) & (movies_loc["revenue"] > 0)].copy()
+		roi_df = movies_loc[(movies_loc["budget"] > 5_000) & (movies_loc["revenue"] > 0)].copy()
 		roi_df["roi"] = np.where(
-			roi_df["budget"] > 0,
+			(roi_df["budget"] > 5_000) & (roi_df["revenue"] > 0),
 			(roi_df["revenue"] - roi_df["budget"]) / roi_df["budget"],
 			np.nan,
 		)
@@ -628,6 +777,7 @@ def ve_tab_tai_chinh(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None
 		if roi_top.empty:
 			thong_bao_khong_co_du_lieu()
 		else:
+			max_roi = float(roi_top["roi"].max())
 			fig_roi = px.bar(
 				roi_top.sort_values("roi", ascending=True),
 				x="roi",
@@ -639,13 +789,29 @@ def ve_tab_tai_chinh(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None
 				labels={"roi": "Tỷ lệ lợi nhuận (ROI)", "title": "Tên phim"},
 			)
 			fig_roi.update_xaxes(
-				type="log",
-				exponentformat="power",
-				showexponent="all",
-				dtick=1,
+				type="linear",
 				showgrid=True,
 				gridcolor="#D1D5DB",
 				griddash="dash",
+				showline=True,
+				linecolor=TEXT_DARK,
+				linewidth=1.2,
+				zeroline=True,
+				zerolinecolor="#D1D5DB",
+				range=[0, max_roi * 1.15] if max_roi > 0 else None,
+			)
+			fig_roi.add_vline(x=max_roi, line_dash="dash", line_color=NETFLIX_RED, line_width=2)
+			fig_roi.add_annotation(
+				x=max_roi,
+				y=1,
+				xref="x",
+				yref="paper",
+				text=f"ROI max: {max_roi:.2f}",
+				showarrow=False,
+				xanchor="left",
+				yanchor="bottom",
+				bgcolor="rgba(255,255,255,0.75)",
+				font={"color": NETFLIX_RED, "size": 11},
 			)
 			st.plotly_chart(ap_dung_giao_dien_plotly(fig_roi), width="stretch")
 
@@ -770,19 +936,52 @@ def ve_tab_tai_chinh(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None
 				"so_luong_phim": "Kích thước bong bóng (Số lượng phim)",
 			},
 		)
-		min_val = float(min(bubble_df["ngan_sach_tb"].min(), bubble_df["doanh_thu_tb"].min()))
-		max_val = float(max(bubble_df["ngan_sach_tb"].max(), bubble_df["doanh_thu_tb"].max()))
+		x_min = float(bubble_df["ngan_sach_tb"].min())
+		x_max = float(bubble_df["ngan_sach_tb"].max())
+		y_min = float(bubble_df["doanh_thu_tb"].min())
+		y_max = float(bubble_df["doanh_thu_tb"].max())
+		x_pad = max((x_max - x_min) * 0.12, 1.0)
+		y_pad = max((y_max - y_min) * 0.12, 1.0)
+		x_range = [max(0.0, x_min - x_pad), x_max + x_pad]
+		y_range = [max(0.0, y_min - y_pad), y_max + y_pad]
+		visible_min = max(x_range[0], y_range[0])
+		visible_max = min(x_range[1], y_range[1])
+
+		fig_bubble.update_xaxes(
+			title="Ngân sách trung bình",
+			type="linear",
+			range=x_range,
+			showgrid=True,
+			gridcolor="#E5E7EB",
+			griddash="dot",
+			showline=True,
+			linecolor=TEXT_DARK,
+			linewidth=1.2,
+			zeroline=False,
+		)
+		fig_bubble.update_yaxes(
+			title="Doanh thu trung bình",
+			type="linear",
+			range=y_range,
+			showgrid=True,
+			gridcolor="#E5E7EB",
+			griddash="dot",
+			showline=True,
+			linecolor=TEXT_DARK,
+			linewidth=1.2,
+			zeroline=False,
+		)
 		fig_bubble.add_shape(
 			type="line",
-			x0=min_val,
-			y0=min_val,
-			x1=max_val,
-			y1=max_val,
+			x0=visible_min,
+			y0=visible_min,
+			x1=visible_max,
+			y1=visible_max,
 			line={"color": NETFLIX_RED, "dash": "dash", "width": 2},
 		)
 		fig_bubble.add_annotation(
-			x=max_val,
-			y=max_val,
+			x=visible_max,
+			y=visible_max,
 			text="Đường hòa vốn: Doanh thu = Ngân sách",
 			showarrow=False,
 			xanchor="right",
@@ -790,8 +989,7 @@ def ve_tab_tai_chinh(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None
 			bgcolor="rgba(255,255,255,0.75)",
 			font={"color": TEXT_DARK, "size": 10},
 		)
-		fig_bubble.update_xaxes(type="log", exponentformat="power", showexponent="all", dtick=1)
-		fig_bubble.update_yaxes(type="log", exponentformat="power", showexponent="all", dtick=1)
+		fig_bubble.update_layout(height=680)
 		st.plotly_chart(ap_dung_giao_dien_plotly(fig_bubble), width="stretch")
 		st.caption("Kích thước bong bóng biểu diễn số lượng phim trong từng nhóm thể loại.")
 
@@ -833,7 +1031,36 @@ def ve_tab_sang_tao(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame) 
 					"dao_dien": "Đạo diễn",
 				},
 			)
-			fig_director.update_traces(marker={"color": NETFLIX_GOLD, "opacity": 0.8})
+			fig_director.update_traces(marker={"color": NETFLIX_GOLD, "opacity": 0.58})
+			# Fit OLS on log10(revenue) to align with log-scaled x-axis.
+			x_data = director_stat["doanh_thu_trung_binh"].astype(float).to_numpy()
+			y_data = director_stat["diem_danh_gia_trung_binh"].astype(float).to_numpy()
+			if x_data.size >= 2:
+				he_so = np.polyfit(np.log10(x_data), y_data, 1)
+				x0, x1 = float(x_data.min()), float(x_data.max())
+				y0 = float(he_so[0] * np.log10(x0) + he_so[1])
+				y1 = float(he_so[0] * np.log10(x1) + he_so[1])
+				fig_director.add_shape(
+					type="line",
+					x0=x0,
+					y0=y0,
+					x1=x1,
+					y1=y1,
+					xref="x",
+					yref="y",
+					layer="above",
+					line={"color": NETFLIX_RED, "width": 5},
+				)
+				fig_director.add_annotation(
+					x=x1,
+					y=y1,
+					text="OLS",
+					showarrow=False,
+					xanchor="right",
+					yanchor="bottom",
+					font={"color": NETFLIX_RED, "size": 11},
+					bgcolor="rgba(255,255,255,0.75)",
+				)
 			fig_director.update_xaxes(type="log", exponentformat="power", showexponent="all", dtick=1)
 			st.plotly_chart(ap_dung_giao_dien_plotly(fig_director), width="stretch")
 
@@ -968,7 +1195,7 @@ def ve_tab_sang_tao(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame) 
 def main() -> None:
 	st.set_page_config(
 		page_title="Netflix Data Storytelling Dashboard",
-		page_icon="🎬",
+		page_icon=None,
 		layout="wide",
 		initial_sidebar_state="expanded",
 	)
@@ -976,6 +1203,10 @@ def main() -> None:
 	st.markdown(
 		f"""
 		<style>
+		body, .stApp {{
+			font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+			-webkit-font-smoothing: antialiased;
+		}}
 		.stApp {{
 			background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 42%, #F4FFFF 100%);
 			color: {TEXT_DARK};
@@ -1008,23 +1239,39 @@ def main() -> None:
 		h1, h2, h3 {{
 			color: {NETFLIX_RED};
 		}}
+		p, span, .stMarkdown, .stTable, .stDataFrame {{
+			font-weight: 400 !important;
+		}}
 		p, span, label, .stCaption, .stMarkdown, .stMetric, .stMetricLabel, .stMetricValue {{
 			color: {TEXT_DARK} !important;
 		}}
 		.stMetricLabel p {{
 			color: {NETFLIX_RED} !important;
-			font-weight: 700 !important;
+			font-weight: 600 !important;
 		}}
 		.stMetricValue {{
 			color: {NETFLIX_RED} !important;
+			font-weight: 700 !important;
+		}}
+		.plotly svg text,
+		.plotly .xtitle,
+		.plotly .ytitle,
+		.plotly .legendtitle,
+		.plotly .legendtext,
+		.plotly .hovertext {{
+			font-weight: 600 !important;
+		}}
+		[data-testid='stTabs'] [data-baseweb='tab'],
+		[data-testid='stTabs'] button[role='tab'] {{
+			color: {TEXT_DARK};
+			font-size: 1.22rem !important;
 			font-weight: 800 !important;
 		}}
-		[data-baseweb='tab'] {{
-			color: {TEXT_DARK};
-		}}
-		[data-baseweb='tab'][aria-selected='true'] {{
+		[data-testid='stTabs'] [data-baseweb='tab'][aria-selected='true'],
+		[data-testid='stTabs'] button[role='tab'][aria-selected='true'] {{
 			color: {NETFLIX_RED} !important;
-			font-weight: 700;
+			font-size: 1.28rem !important;
+			font-weight: 900 !important;
 		}}
 		[data-testid='stSidebar'] {{
 			background: linear-gradient(180deg, #FFFFFF 0%, #F5FBFB 100%);
@@ -1034,10 +1281,15 @@ def main() -> None:
 			color: {TEXT_DARK} !important;
 		}}
 		[data-testid='stSidebar'] h2,
-		[data-testid='stSidebar'] h3,
-		[data-testid='stSidebar'] .stMarkdown p {{
+		[data-testid='stSidebar'] h3 {{
 			color: {NETFLIX_RED} !important;
 			font-weight: 700;
+		}}
+		[data-testid='stSidebar'] label,
+		[data-testid='stSidebar'] .stCaption,
+		.stCaption,
+		.streamlit-expanderHeader p {{
+			font-weight: 600 !important;
 		}}
 		[data-testid='stSidebar'] [data-baseweb='select'] > div,
 		[data-testid='stSidebar'] [data-baseweb='popover'] > div,
@@ -1076,6 +1328,13 @@ def main() -> None:
 			color: #FFFFFF !important;
 			fill: #FFFFFF !important;
 		}}
+		@media (min-width: 0px) {{
+			.plotly .main-svg text,
+			.stMetricLabel p,
+			.stCaption {{
+				font-weight: 600 !important;
+			}}
+		}}
 		</style>
 		""",
 		unsafe_allow_html=True,
@@ -1090,7 +1349,6 @@ def main() -> None:
 		st.stop()
 
 	movies_base, genres_base = bo_loc_toan_cuc(du_lieu)
-	hien_thi_trang_thai_loc_tuong_tac()
 	movies_loc, genres_loc = ap_dung_loc_tuong_tac(du_lieu, movies_base, genres_base)
 
 	if movies_loc.empty:
@@ -1100,10 +1358,10 @@ def main() -> None:
 	hien_thi_kpi(movies_loc, genres_loc)
 	tab1, tab2, tab3, tab4 = st.tabs(
 		[
-			"🌍 Toàn cảnh",
-			"🎯 Chất lượng",
-			"💰 Tài chính",
-			"🎬 Sáng tạo",
+			"Toàn cảnh",
+			"Chất lượng",
+			"Tài chính",
+			"Sáng tạo",
 		]
 	)
 
