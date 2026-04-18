@@ -712,11 +712,19 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 				x="Nhóm ngân sách",
 				y="Nhóm điểm số",
 				z="So_luong",
+				histfunc="sum",
 				text_auto=True,
 				color_continuous_scale=SEQ_COUNT,
 				title="Tương quan lợi nhuận (ROI) theo điểm số và ngân sách",
+				labels={
+					"Nhóm ngân sách": "Nhóm ngân sách",
+					"Nhóm điểm số": "Nhóm điểm số",
+					"So_luong": "Tổng số phim",
+					"ROI_trung_binh": "ROI trung bình",
+				},
 				hover_data={"ROI_trung_binh": ":.2f", "So_luong": True},
 			)
+			fig_hist.update_coloraxes(colorbar_title_text="Tổng số phim")
 			st.plotly_chart(ap_dung_giao_dien_plotly(fig_hist), width="stretch")
 
 	with q6_col:
