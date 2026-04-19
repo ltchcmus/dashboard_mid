@@ -10,7 +10,19 @@ import plotly.graph_objects as go
 import streamlit as st
 from plotly.subplots import make_subplots
 
+try:
+	import pycountry
+except Exception:
+	pycountry = None
+
+try:
+	from babel import Locale
+	VI_LOCALE = Locale.parse("vi")
+except Exception:
+	VI_LOCALE = None
+
 DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "processed"
+DASHBOARD_TIEU_DE = "Bảng điều khiển phân tích dữ liệu Netflix"
 NETFLIX_RED = "#E50914"
 NETFLIX_GOLD = "#FFB100"
 TEXT_DARK = "#1F2937"
@@ -38,6 +50,180 @@ QUALITY_BUCKET_COLORS = {
 	"Tốt (7-8)": NETFLIX_GOLD,
 	"Xuất sắc (8-10)": "#00A651",
 }
+
+THE_LOAI_VI_MAP = {
+	"Action": "Hành động",
+	"Adventure": "Phiêu lưu",
+	"Animation": "Hoạt hình",
+	"Comedy": "Hài",
+	"Crime": "Tội phạm",
+	"Documentary": "Tài liệu",
+	"Drama": "Chính kịch",
+	"Family": "Gia đình",
+	"Fantasy": "Kỳ ảo",
+	"History": "Lịch sử",
+	"Horror": "Kinh dị",
+	"Music": "Âm nhạc",
+	"Mystery": "Bí ẩn",
+	"Romance": "Lãng mạn",
+	"Science Fiction": "Khoa học viễn tưởng",
+	"TV Movie": "Phim truyền hình",
+	"Thriller": "Giật gân",
+	"War": "Chiến tranh",
+	"Western": "Viễn Tây",
+}
+
+NGON_NGU_VI_FALLBACK_MAP = {
+	"en": "Tiếng Anh",
+	"fr": "Tiếng Pháp",
+	"ja": "Tiếng Nhật",
+	"ko": "Tiếng Hàn",
+	"es": "Tiếng Tây Ban Nha",
+	"de": "Tiếng Đức",
+	"it": "Tiếng Ý",
+	"pt": "Tiếng Bồ Đào Nha",
+	"ru": "Tiếng Nga",
+	"zh": "Tiếng Trung",
+	"hi": "Tiếng Hindi",
+	"vi": "Tiếng Việt",
+	"ar": "Tiếng Ả Rập",
+	"th": "Tiếng Thái",
+	"id": "Tiếng Indonesia",
+	"tr": "Tiếng Thổ Nhĩ Kỳ",
+	"pl": "Tiếng Ba Lan",
+	"nl": "Tiếng Hà Lan",
+	"sv": "Tiếng Thụy Điển",
+	"da": "Tiếng Đan Mạch",
+	"no": "Tiếng Na Uy",
+	"fi": "Tiếng Phần Lan",
+	"cs": "Tiếng Séc",
+	"el": "Tiếng Hy Lạp",
+	"he": "Tiếng Do Thái",
+	"fa": "Tiếng Ba Tư",
+	"uk": "Tiếng Ukraina",
+	"ro": "Tiếng Romania",
+	"hu": "Tiếng Hungary",
+	"bn": "Tiếng Bengal",
+}
+
+NGON_NGU_ALIAS_MAP = {
+	"cn": "zh",
+	"zh-cn": "zh",
+	"zh-tw": "zh",
+	"pt-br": "pt",
+	"pt-pt": "pt",
+}
+
+QUOC_GIA_ALIAS_MAP = {
+	"united states of america": "United States",
+	"uk": "United Kingdom",
+	"south korea": "Korea, Republic of",
+	"north korea": "Korea, Democratic People's Republic of",
+	"czech republic": "Czechia",
+	"russia": "Russian Federation",
+	"vietnam": "Viet Nam",
+	"laos": "Lao People's Democratic Republic",
+	"syria": "Syrian Arab Republic",
+	"moldova": "Moldova, Republic of",
+	"venezuela": "Venezuela, Bolivarian Republic of",
+	"tanzania": "Tanzania, United Republic of",
+	"iran": "Iran, Islamic Republic of",
+	"bolivia": "Bolivia, Plurinational State of",
+	"palestine": "Palestine, State of",
+	"ivory coast": "Côte d'Ivoire",
+}
+
+QUOC_GIA_VI_FALLBACK_MAP = {
+	"United States of America": "Hoa Kỳ",
+	"United States": "Hoa Kỳ",
+	"United Kingdom": "Vương quốc Anh",
+	"South Korea": "Hàn Quốc",
+	"Japan": "Nhật Bản",
+	"France": "Pháp",
+	"Germany": "Đức",
+	"Spain": "Tây Ban Nha",
+	"Italy": "Ý",
+	"China": "Trung Quốc",
+	"India": "Ấn Độ",
+	"Mexico": "Mexico",
+	"Canada": "Canada",
+	"Australia": "Úc",
+	"Thailand": "Thái Lan",
+	"Indonesia": "Indonesia",
+	"Vietnam": "Việt Nam",
+	"Viet Nam": "Việt Nam",
+	"Russia": "Nga",
+	"Russian Federation": "Nga",
+}
+
+_COUNTRY_TRANSLATION_CACHE: dict[str, str] = {}
+
+
+def chuan_hoa_chuoi(gia_tri: str) -> str:
+	return str(gia_tri).strip().lower()
+
+
+def viet_hoa_the_loai(ten_the_loai: str) -> str:
+	if pd.isna(ten_the_loai):
+		return "Không xác định"
+	ten = str(ten_the_loai).strip()
+	if not ten:
+		return "Không xác định"
+	return THE_LOAI_VI_MAP.get(ten, ten)
+
+
+def viet_hoa_ngon_ngu(ma_ngon_ngu: str, ten_ngon_ngu: str) -> str:
+	ma = "" if pd.isna(ma_ngon_ngu) else str(ma_ngon_ngu).strip().lower()
+	ma = NGON_NGU_ALIAS_MAP.get(ma, ma)
+	ma_goc = ma.split("-")[0] if ma else ""
+
+	if VI_LOCALE is not None:
+		ten_vi = VI_LOCALE.languages.get(ma) or VI_LOCALE.languages.get(ma_goc)
+		if ten_vi:
+			return ten_vi[:1].upper() + ten_vi[1:]
+
+	if ma in NGON_NGU_VI_FALLBACK_MAP:
+		return NGON_NGU_VI_FALLBACK_MAP[ma]
+	if ma_goc in NGON_NGU_VI_FALLBACK_MAP:
+		return NGON_NGU_VI_FALLBACK_MAP[ma_goc]
+
+	if pd.notna(ten_ngon_ngu):
+		ten_goc = str(ten_ngon_ngu).strip()
+		if ten_goc:
+			return ten_goc
+
+	return "Không xác định"
+
+
+def viet_hoa_quoc_gia(ten_quoc_gia: str) -> str:
+	if pd.isna(ten_quoc_gia):
+		return "Không xác định"
+	ten_en = str(ten_quoc_gia).strip()
+	if not ten_en:
+		return "Không xác định"
+
+	if ten_en in _COUNTRY_TRANSLATION_CACHE:
+		return _COUNTRY_TRANSLATION_CACHE[ten_en]
+
+	lookup_value = QUOC_GIA_ALIAS_MAP.get(chuan_hoa_chuoi(ten_en), ten_en)
+	ten_vi = None
+
+	if pycountry is not None and VI_LOCALE is not None:
+		try:
+			country_obj = pycountry.countries.lookup(lookup_value)
+			ten_vi = VI_LOCALE.territories.get(country_obj.alpha_2)
+		except LookupError:
+			ten_vi = None
+
+	if not ten_vi:
+		ten_vi = QUOC_GIA_VI_FALLBACK_MAP.get(ten_en)
+	if not ten_vi:
+		ten_vi = QUOC_GIA_VI_FALLBACK_MAP.get(lookup_value)
+	if not ten_vi:
+		ten_vi = ten_en
+
+	_COUNTRY_TRANSLATION_CACHE[ten_en] = ten_vi
+	return ten_vi
 
 
 def dinh_dang_tien_te(gia_tri: float) -> str:
@@ -298,7 +484,23 @@ def tai_du_lieu() -> dict[str, pd.DataFrame]:
 		du_lieu["movies"]["revenue"], errors="coerce"
 	)
 
+	movies = du_lieu["movies"]
+	movies["language_name_en"] = movies["language_name"]
+	movies["language_name"] = [
+		viet_hoa_ngon_ngu(ma, ten)
+		for ma, ten in zip(movies["language_code"], movies["language_name_en"])
+	]
+	du_lieu["movies"] = movies
+
+	countries = du_lieu["countries"].copy()
+	countries["country_name_en"] = countries["country_name"].astype(str).str.strip()
+	countries["country_name"] = countries["country_name_en"].apply(viet_hoa_quoc_gia)
+	du_lieu["countries"] = countries
+
 	du_lieu["genres_exploded"] = tach_cot_danh_sach(du_lieu["movies"], "genres", "the_loai")
+	du_lieu["genres_exploded"]["the_loai"] = du_lieu["genres_exploded"]["the_loai"].apply(
+		viet_hoa_the_loai
+	)
 	du_lieu["casts_exploded"] = tach_cot_danh_sach(du_lieu["movies"], "cast", "dien_vien")
 	du_lieu["directors_exploded"] = tach_cot_danh_sach(
 		du_lieu["movies"], "director", "dao_dien"
@@ -327,13 +529,28 @@ def bo_loc_toan_cuc(du_lieu: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, pd.
 	)
 
 	danh_sach_quoc_gia = sorted(countries["country_name"].dropna().unique().tolist())
-	st.sidebar.multiselect("Quốc gia", options=danh_sach_quoc_gia, key="quoc_gia_chon")
+	st.sidebar.multiselect(
+		"Quốc gia",
+		options=danh_sach_quoc_gia,
+		key="quoc_gia_chon",
+		placeholder="Chọn quốc gia",
+	)
 
 	danh_sach_the_loai = sorted(genres_exploded["the_loai"].dropna().unique().tolist())
-	st.sidebar.multiselect("Thể loại", options=danh_sach_the_loai, key="the_loai_chon")
+	st.sidebar.multiselect(
+		"Thể loại",
+		options=danh_sach_the_loai,
+		key="the_loai_chon",
+		placeholder="Chọn thể loại",
+	)
 
 	danh_sach_ngon_ngu = sorted(movies["language_name"].dropna().unique().tolist())
-	st.sidebar.multiselect("Ngôn ngữ", options=danh_sach_ngon_ngu, key="ngon_ngu_chon")
+	st.sidebar.multiselect(
+		"Ngôn ngữ",
+		options=danh_sach_ngon_ngu,
+		key="ngon_ngu_chon",
+		placeholder="Chọn ngôn ngữ",
+	)
 
 	if st.sidebar.button("Xóa tất cả bộ lọc", use_container_width=True):
 		st.session_state["pending_filter_updates"] = {
@@ -428,9 +645,15 @@ def ve_tab_toan_canh(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame,
 
 	countries_loc = countries[countries["show_id"].isin(movies_map["show_id"])]
 	qg_dem = (
-		countries_loc.groupby("country_name", as_index=False)["show_id"]
+		countries_loc.groupby(["country_name_en", "country_name"], as_index=False)["show_id"]
 		.nunique()
-		.rename(columns={"country_name": "Quốc gia", "show_id": "Số lượng phim"})
+		.rename(
+			columns={
+				"country_name_en": "Quốc gia (EN)",
+				"country_name": "Quốc gia",
+				"show_id": "Số lượng phim",
+			}
+		)
 	)
 	countries_chon = st.session_state.get("quoc_gia_chon", [])
 	gia_tri_qg = None
@@ -451,8 +674,9 @@ def ve_tab_toan_canh(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame,
 
 			fig_map = px.choropleth(
 				qg_dem,
-				locations="Quốc gia",
+				locations="Quốc gia (EN)",
 				locationmode="country names",
+				hover_name="Quốc gia",
 				color="gia_tri_mau",
 				custom_data=["Quốc gia"],
 				color_continuous_scale=[
@@ -463,7 +687,7 @@ def ve_tab_toan_canh(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame,
 				],
 				range_color=[color_min, color_max],
 				title="Phân bố phim theo quốc gia",
-				hover_data={"Số lượng phim": True, "gia_tri_mau": False},
+				hover_data={"Quốc gia (EN)": False, "Số lượng phim": True, "gia_tri_mau": False},
 			)
 			fig_map.update_coloraxes(showscale=False)
 		else:
@@ -474,13 +698,14 @@ def ve_tab_toan_canh(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame,
 
 			fig_map = px.choropleth(
 				qg_dem,
-				locations="Quốc gia",
+				locations="Quốc gia (EN)",
 				locationmode="country names",
+				hover_name="Quốc gia",
 				color="Số lượng phim (log10)",
 				custom_data=["Quốc gia"],
 				color_continuous_scale=SEQ_COUNT,
 				title="Phân bố phim theo quốc gia",
-				hover_data={"Số lượng phim": True, "Số lượng phim (log10)": False},
+				hover_data={"Quốc gia (EN)": False, "Số lượng phim": True, "Số lượng phim (log10)": False},
 			)
 			fig_map.update_coloraxes(
 				colorbar_title="Số lượng phim",
@@ -1233,7 +1458,7 @@ def ve_tab_sang_tao(du_lieu: dict[str, pd.DataFrame], movies_loc: pd.DataFrame) 
 
 def main() -> None:
 	st.set_page_config(
-		page_title="Netflix Data Storytelling Dashboard",
+		page_title=DASHBOARD_TIEU_DE,
 		page_icon=None,
 		layout="wide",
 		initial_sidebar_state="expanded",
@@ -1258,7 +1483,7 @@ def main() -> None:
 			align-items: center !important;
 		}}
 		[data-testid='stHeader']::before {{
-			content: "Netflix Data Storytelling Dashboard";
+			content: "{DASHBOARD_TIEU_DE}";
 			color: #FFFFFF !important;
 			font-size: 2.2rem;
 			font-weight: 700;
