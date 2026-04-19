@@ -316,12 +316,14 @@ def bo_loc_toan_cuc(du_lieu: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, pd.
 	nam_max = int(movies["release_year"].max())
 
 	st.sidebar.header("Bộ lọc hệ thống")
+	if "khoang_nam_chon" not in st.session_state:
+		st.session_state["khoang_nam_chon"] = (nam_min, nam_max)
+
 	khoang_nam = st.sidebar.slider(
 		"Năm phát hành",
 		min_value=nam_min,
 		max_value=nam_max,
 		key="khoang_nam_chon",
-		value=(nam_min, nam_max),
 	)
 
 	danh_sach_quoc_gia = sorted(countries["country_name"].dropna().unique().tolist())
@@ -332,6 +334,25 @@ def bo_loc_toan_cuc(du_lieu: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, pd.
 
 	danh_sach_ngon_ngu = sorted(movies["language_name"].dropna().unique().tolist())
 	st.sidebar.multiselect("Ngôn ngữ", options=danh_sach_ngon_ngu, key="ngon_ngu_chon")
+
+	if st.sidebar.button("Xóa tất cả bộ lọc", use_container_width=True):
+		st.session_state["pending_filter_updates"] = {
+			"quoc_gia_chon": [],
+			"the_loai_chon": [],
+			"ngon_ngu_chon": [],
+			"khoang_nam_chon": (nam_min, nam_max),
+		}
+		st.session_state["chart_event_signature"] = {
+			"quoc_gia_chon": None,
+			"ngon_ngu_chon": None,
+			"the_loai_chon": None,
+		}
+		st.session_state["chart_event_skip_once"] = {
+			"quoc_gia_chon": False,
+			"ngon_ngu_chon": False,
+			"the_loai_chon": False,
+		}
+		st.rerun()
 
 	quoc_gia_chon = st.session_state.get("quoc_gia_chon", [])
 	the_loai_chon = st.session_state.get("the_loai_chon", [])
@@ -690,12 +711,24 @@ def ve_tab_chat_luong(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> Non
 		else:
 			# Rank before qcut to reduce bin drops when many budget values are duplicated.
 			budget_rank = hist_df["budget"].rank(method="first")
-			ma_phan_vi = pd.qcut(budget_rank, q=4, labels=False)
-			so_nhom_ngan_sach = int(ma_phan_vi.max()) + 1
-			nhan_phan_vi = ["Q1 (Thấp)", "Q2", "Q3", "Q4 (Cao)"]
-			hist_df["Nhóm ngân sách (tứ phân vị)"] = ma_phan_vi.map(
-				{i: nhan_phan_vi[i] for i in range(so_nhom_ngan_sach)}
-			)
+			so_nhom_muc_tieu = min(4, int(budget_rank.nunique()))
+			if so_nhom_muc_tieu < 2:
+				hist_df["Nhóm ngân sách (tứ phân vị)"] = "Q1 (Thấp)"
+			else:
+				ma_phan_vi = pd.qcut(
+					budget_rank,
+					q=so_nhom_muc_tieu,
+					labels=False,
+					duplicates="drop",
+				)
+				if ma_phan_vi.isna().all():
+					hist_df["Nhóm ngân sách (tứ phân vị)"] = "Q1 (Thấp)"
+				else:
+					so_nhom_ngan_sach = int(ma_phan_vi.max()) + 1
+					nhan_phan_vi = ["Q1 (Thấp)", "Q2", "Q3", "Q4 (Cao)"]
+					hist_df["Nhóm ngân sách (tứ phân vị)"] = ma_phan_vi.map(
+						{i: nhan_phan_vi[i] for i in range(so_nhom_ngan_sach)}
+					)
 			hist_df["Nhóm điểm số"] = pd.cut(
 				hist_df["vote_average"],
 				bins=[-np.inf, 6, 7.5, np.inf],
