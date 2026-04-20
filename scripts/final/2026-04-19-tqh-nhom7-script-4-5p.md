@@ -1,12 +1,5 @@
 # Kịch bản thuyết trình theo từng slide (mục tiêu 4-5 phút)
 
-## Thông số chung
-
-- Deck: TQH - Nhóm 7
-- Số slide: 20
-- Tổng thời lượng mục tiêu: khoảng 4 phút 50 giây
-- Mục tiêu: nói nhanh, đủ ý, không mất mạch nội dung
-
 ---
 
 ## Slide 1 (00:00-00:12) - Trang bìa
@@ -31,7 +24,7 @@
 
 ## Slide 6 (00:58-01:18) - Tổng quan dữ liệu
 
-"Nguồn dữ liệu là Netflix movies detailed up to 2025. Dữ liệu gốc có 16.000 dòng và 18 cột, sau tiền xử lý còn 15.239 dòng và 18 cột. Mốc thời gian phân tích từ 2010 đến 2025, tập trung vào Movie, với 68 ngôn ngữ, nổi bật là English, French, Japanese, Korean và Spanish."
+"Nguồn dữ liệu là Netflix movies detailed up to 2025. Dữ liệu gốc có 16.000 dòng và 18 cột, sau tiền xử lý còn 15.239 dòng và 17 cột. Mốc thời gian phân tích từ 2010 đến 2025, tập trung vào Movie, với 68 ngôn ngữ, nổi bật là Tiếng Anh, Tiếng Pháp, Tiếng Nhật, Tiếng Hàn và Tiếng Tây Ban Nha."
 
 ## Slide 7 (01:18-01:28) - Sơ lược trường dữ liệu
 
@@ -39,7 +32,7 @@
 
 ## Slide 8 (01:28-01:52) - Kiểm định và tiền xử lý
 
-"Ở dữ liệu gốc, cột duration bị thiếu 100% nên được loại bỏ. Nhóm cũng loại các dòng thiếu trường trọng yếu như country, cast, director, description và genres, đồng thời chuẩn hóa các cột số. Kết quả là loại 761 dòng, tương đương khoảng 4,76%, giữ lại 95,24% dữ liệu, đủ ổn định để phân tích."
+"Ở dữ liệu gốc, cột duration bị thiếu 100% nên được loại bỏ. Nhóm cũng loại các dòng thiếu trường trọng yếu như quốc gia, diễn viên, đạo diễn, mô tả, thể loại, đồng thời chuẩn hóa các cột số. Kết quả là loại 761 dòng, tương đương khoảng 4,76%, giữ lại 95,24% dữ liệu, đủ ổn định để phân tích."
 
 ## Slide 9 (01:52-01:56) - Chuyển phần
 
@@ -51,11 +44,11 @@
 
 ## Slide 11 (02:12-02:32) - What
 
-"Về What, dữ liệu gồm bảng chính movies và các bảng quan hệ như movie_countries, movie_genres, movie_directors, movie_casts; đồng thời có chiều không gian và thời gian. Thuộc tính được chia thành categorical, ordered và quantitative, bao phủ đầy đủ cho phân tích mô tả, so sánh và định lượng."
+"Về What, dữ liệu gồm bảng chính movies và các bảng quan hệ, đồng thời có chiều không gian và thời gian. Thuộc tính được chia thành categorical, ordered và quantitative, bao phủ đầy đủ cho phân tích mô tả, so sánh và định lượng."
 
 ## Slide 12 (02:32-02:48) - Why
 
-"Về Why, nhóm tập trung 5 tác vụ: Discover, Compare, Rank, Correlate và Summarize. Nghĩa là từ phát hiện trọng điểm thị trường đến xếp hạng ROI, phân tích tương quan và chốt lại thành ưu tiên đầu tư cụ thể."
+"Về Why, nhóm tập trung 5 tác vụ: Khám phá, So sánh, Xếp hạng, Tìm mối tương quan và Tổng hợp. Nghĩa là từ phát hiện trọng điểm thị trường đến xếp hạng ROI, phân tích tương quan và chốt lại thành ưu tiên đầu tư cụ thể."
 
 ## Slide 13 (02:48-02:52) - Chuyển phần
 
@@ -90,9 +83,3 @@
 "Nhóm 7 xin cảm ơn thầy và các bạn đã theo dõi phần trình bày. Nhóm sẵn sàng nhận câu hỏi và góp ý."
 
 ---
-
-## Gợi ý nói nhanh nếu cần kéo về đúng 4:50
-
-- Rút gọn Slide 3 còn 1 câu.
-- Gộp Slide 7 vào cuối Slide 6.
-- Ở Slide 14-17, mỗi slide chỉ giữ 2 ý: insight chính và hàm ý hành động.
