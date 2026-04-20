@@ -42,7 +42,9 @@
 
 ---
 
-### 05:00-11:00 | A (câu 1-3)
+### 05:00-11:00 | Quân (câu 1-3)
+
+**giới thiệu tương tác dashboard**
 
 "Em xin bắt đầu với nhóm câu hỏi thị trường."
 
@@ -50,59 +52,44 @@
 
 "Từ khung này, nhóm đặt 3 câu hỏi thị trường. Câu 1: mức độ tập trung nội dung theo quốc gia hiện như thế nào. Câu 2: cơ cấu ngôn ngữ của thư viện hiện ra sao. Câu 3: khác biệt thể loại giữa các thị trường lớn đến mức nào."
 
-"Trước tiên, với câu 1, nhóm dùng bản đồ nhiệt quốc gia theo thang log. Kết luận là thị trường vẫn tập trung mạnh vào một số trung tâm lớn, nhưng đã xuất hiện nhiều cụm tăng trưởng khu vực đủ rõ để cân nhắc ưu tiên phát hành bản địa."
+.......
 
-"Tiếp theo, với câu 2, treemap ngôn ngữ cho thấy một ngôn ngữ chủ lực vẫn chiếm tỷ trọng cao, nhưng nhóm ngôn ngữ kế tiếp đang mở rộng đáng kể. Điều này cho thấy chiến lược nội dung không thể chỉ bám một thị trường ngôn ngữ duy nhất."
-
-"Cuối cùng, với câu 3, khi dùng lọc quốc gia rồi nhìn lại thanh thể loại, thứ hạng thể loại thay đổi rõ rệt. Nghĩa là cùng một danh mục toàn cầu nhưng khẩu vị từng thị trường là khác nhau, nên quyết định phân phối phải có lớp tùy biến theo khu vực."
-
-"Phần của em xin hết. Mời B tiếp tục với nhóm câu hỏi về chất lượng nội dung."
+"Phần của em xin hết. Mời Hiếu tiếp tục với nhóm câu hỏi về chất lượng nội dung."
 
 ---
 
-### 11:00-17:00 | B (câu 4-6)
+### 11:00-17:00 | Hiếu (câu 4-6)
 
 "Em xin tiếp tục với trục chất lượng nội dung."
 
-"Trong phần này, nhóm lần lượt trả lời 3 câu: Câu 4 về phân bổ chất lượng tổng thể, Câu 5 về thể loại chất lượng cao và ổn định, Câu 6 về tác động của ngân sách đến điểm chất lượng."
-
-"Trước tiên, với câu 4, donut chất lượng cho thấy thư viện hiện nghiêng về vùng trung bình đến khá. Nhóm Khá khoảng 39.75 phần trăm, còn nhóm Xuất sắc khoảng 2.08 phần trăm. Điều này phản ánh chiến lược phủ rộng danh mục nhiều hơn là dồn toàn bộ nguồn lực vào một số rất ít siêu phẩm."
-
-"Tiếp theo, với câu 5, nhóm kết hợp biểu đồ top thể loại chất lượng cao và biểu đồ sai số ổn định điểm. Từ đó, mình không chỉ nhìn số lượng phim tốt, mà còn nhìn độ ổn định chất lượng theo thể loại để xác định vùng đầu tư an toàn hơn."
-
-"Cuối cùng, với câu 6, heatmap ngân sách - điểm cho thấy tăng ngân sách không tạo cải thiện điểm một cách đồng đều ở mọi phân khúc. Dòng tiền lớn giúp giảm rủi ro nhóm điểm thấp, nhưng không tự động tạo ra bứt phá tương ứng ở nhóm điểm rất cao."
+"Phần chất lượng nội dung này tập trung vào 3 câu hỏi:
+....
 
 "Hàm ý quản trị là: thay vì chỉ tăng ngân sách đại trà, cần ưu tiên các cụm thể loại vừa giữ được mức điểm ổn định vừa có đủ quy mô để mở rộng bền vững."
 
-"Phần chất lượng xin kết thúc tại đây. Mời C tiếp tục với nhóm câu hỏi tài chính gồm câu 7 và câu 8."
+"Phần chất lượng xin kết thúc tại đây. Mời Thịnh tiếp tục với nhóm câu hỏi tài chính gồm câu 7 và câu 8."
 
 ---
 
-### 17:00-21:00 | C (câu 7-8)
+### 17:00-21:00 | Thịnh (câu 7-8)
 
 "Em xin trình bày phần tài chính."
 
 "Phần tài chính tập trung vào 2 câu: Câu 7 về quan hệ giữa ngân sách, doanh thu và ROI; Câu 8 về dịch chuyển dòng vốn theo thời gian giữa các nhóm thể loại."
 
-"Trước tiên, với câu 7, khi đặt biểu đồ bong bóng ngân sách - doanh thu cạnh biểu đồ tỷ suất lợi nhuận, kết luận chính là: quy mô vốn và doanh thu có đi cùng chiều về mặt tuyệt đối, nhưng tỷ suất lợi nhuận không tăng đều theo vốn. Có dự án ngân sách vừa vẫn cho hiệu quả vượt trội."
+.....
 
-"Tiếp theo, với câu 8, đường xu hướng theo thời gian cho thấy dòng vốn đang dịch chuyển giữa các nhóm thể loại. Tuy nhiên, thể loại được bơm vốn mạnh chưa chắc là thể loại ổn định điểm cao nhất. Vì vậy, cần theo dõi đồng thời vốn, lợi nhuận và chất lượng thay vì tối ưu một biến đơn lẻ."
-
-"Phần tài chính của em xin hết. Mời D hoàn tất 2 câu cuối trong trục sáng tạo là câu 9 và câu 10."
+"Phần tài chính của em xin hết. Mời Công hoàn tất 2 câu cuối trong trục sáng tạo là câu 9 và câu 10."
 
 ---
 
-### 21:00-25:00 | D (câu 9-10)
+### 21:00-25:00 | Công (câu 9-10)
 
-"Em xin tiếp tục với trục sáng tạo."
+"Em xin tiếp tục với tab sáng tạo."
 
 "Phần này có 2 câu: Câu 9 về tác động của tổ hợp đạo diễn - diễn viên, và Câu 10 về tác động của đa dạng thể loại đến mức thành công."
 
-"Trước tiên, với câu 9, trong tab Sáng tạo, em dùng cách đọc không cần nêu tên riêng: cụm điểm ở vùng phải-trên của biểu đồ đạo diễn là nhóm cân bằng tốt giữa doanh thu trung bình và điểm trung bình; đồng thời nhóm cột cao nhất ở biểu đồ diễn viên cho thấy lực kéo doanh thu tập trung vào một số nhân tố hạt nhân."
-
-"Tiếp theo, với câu 10, biểu đồ cột - đường theo số thể loại cho thấy xu hướng tăng rõ từ nhóm 1 thể loại sang nhóm 4 cộng. Nói theo ngưỡng: độ phổ biến tăng gần gấp đôi và điểm trung bình tăng khoảng nửa điểm. Nghĩa là đa dạng thể loại cao hơn đi cùng tín hiệu thành công tốt hơn trong dữ liệu hiện tại."
-
-"Kết lại toàn bộ 10 câu hỏi: tăng trưởng bền vững không đến từ mở rộng đại trà, mà đến từ phân bổ vốn đúng thị trường, đúng thể loại và đúng tổ hợp sáng tạo."
+...
 
 ---
 
