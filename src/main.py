@@ -1042,15 +1042,26 @@ def ve_tab_tai_chinh(movies_loc: pd.DataFrame, genres_loc: pd.DataFrame) -> None
 			thong_bao_khong_co_du_lieu()
 		else:
 			max_roi = float(roi_top["roi"].max())
+			roi_top_hien_thi = roi_top.sort_values("roi", ascending=True).copy()
 			fig_roi = px.bar(
-				roi_top.sort_values("roi", ascending=True),
+				roi_top_hien_thi,
 				x="roi",
 				y="title",
 				orientation="h",
 				color="roi",
+				custom_data=["budget", "revenue"],
 				color_continuous_scale=DIVERGE_QUALITY,
 				title="Top dự án có tỷ suất lợi nhuận (ROI) cao nhất",
 				labels={"roi": "Tỷ lệ lợi nhuận (ROI)", "title": "Tên phim"},
+			)
+			fig_roi.update_traces(
+				hovertemplate=(
+					"Tên phim=%{y}<br>"
+					"Tỷ lệ lợi nhuận (ROI)=%{x:.4f}<br>"
+					"Ngân sách=$%{customdata[0]:,.0f}<br>"
+					"Doanh thu=$%{customdata[1]:,.0f}"
+					"<extra></extra>"
+				)
 			)
 			fig_roi.update_xaxes(
 				type="linear",
