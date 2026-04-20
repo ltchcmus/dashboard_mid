@@ -13,7 +13,7 @@
 **Trả lời mẫu:**
 
 - Dữ liệu phân bố lệch mạnh: một vài thị trường rất lớn, còn nhiều thị trường nhỏ nằm ở đuôi dài.
-- Thang log giúp nhìn thấy đồng thời cả nhóm đầu và nhóm trung bình-thấp, tránh việc bản đồ bị "nuốt màu" bởi vài nước lớn.
+- Thang log giúp nhìn thấy đồng thời cả nhóm đầu và nhóm trung bình-thấp, tránh việc bản đồ bị "lấn át màu sắc" bởi vài nước lớn.
 - Để tránh hiểu sai, nhóm luôn đọc kèm thứ hạng, tooltip giá trị gốc và kết luận theo cụm thay vì chỉ nhìn màu tuyệt đối.
 
 ## 3. Câu 6 cho thấy tăng ngân sách không làm điểm tăng đồng đều. Vậy ngân sách trong dashboard được dùng như công cụ gì?
