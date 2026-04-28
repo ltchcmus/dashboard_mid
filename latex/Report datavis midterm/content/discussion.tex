@@ -2,25 +2,27 @@
 
 \subsection{Khó khăn gặp phải}
 \begin{itemize}[leftmargin=2em]
-    \item Dữ liệu thu thập có nhiều trường thiếu hoặc không đồng nhất giữa các nhà cung cấp.
-    \item Phân phối doanh số lệch mạnh, buộc phải xử lý log để quan sát xu hướng rõ ràng hơn.
-    \item Một số biến mô tả (tác giả, NXB) có nhiều biến thể tên, cần chuẩn hóa thủ công.
+    \item Dữ liệu gốc chứa nhiều trường dạng danh sách như quốc gia, thể loại, đạo diễn, diễn viên; nếu không tách đúng sẽ rất khó tổng hợp và lọc chéo.
+    \item Nhiều phim có \texttt{budget} hoặc \texttt{revenue} bằng 0, làm giảm độ ổn định khi tính ROI và khi diễn giải các biểu đồ tài chính.
+    \item Số lượng quốc gia và ngôn ngữ lớn khiến việc chọn mức tổng quát hóa trên dashboard phải cân bằng giữa đầy đủ thông tin và khả năng đọc.
+    \item Khi xuất báo cáo PDF, một số biểu đồ tương tác của Streamlit không thể được tái hiện hoàn toàn nếu chỉ dùng hình tĩnh.
 \end{itemize}
 
 \subsection{Hạn chế của thiết kế hiện tại}
 \begin{itemize}[leftmargin=2em]
-    \item Dashboard chủ yếu mô tả, chưa đi sâu vào kiểm định nguyên nhân.
-    \item Chưa có dữ liệu thời gian đủ chi tiết để phân tích xu hướng dài hạn theo mùa vụ.
-    \item Tương tác dừng ở mức lọc và hover, chưa có drill-down sâu tới từng sản phẩm.
+    \item Dashboard hiện thiên về phân tích mô tả và khám phá mẫu; nhóm chưa thực hiện kiểm định giả thuyết hoặc mô hình dự báo.
+    \item Mốc thời gian trong dữ liệu mới dừng ở năm phát hành, chưa có chuỗi thời gian theo ngày/tháng để phân tích phát hành theo mùa hoặc vòng đời doanh thu.
+    \item Một số chỉ số như \texttt{popularity} phụ thuộc vào nguồn dữ liệu ban đầu, nên cần được diễn giải như chỉ báo tương đối thay vì thước đo tuyệt đối.
+    \item Báo cáo hiện cần người dùng tự bổ sung screenshot dashboard thực tế để phản ánh đầy đủ phần tương tác.
 \end{itemize}
 
 \subsection{Hướng phát triển}
 \begin{itemize}[leftmargin=2em]
-    \item Bổ sung dữ liệu theo thời gian và lịch sử giá để phân tích xu hướng theo mùa vụ.
-    \item Thêm phân khúc người dùng hoặc nhóm khách hàng nếu có dữ liệu hành vi.
-    \item Mở rộng mô hình dự báo doanh số và kiểm thử bằng dữ liệu mới.
-    \item Thu thập thêm thông tin khuyến mãi theo chiến dịch để đánh giá hiệu quả.
+    \item Bổ sung dữ liệu chuỗi thời gian chi tiết hơn về ngày phát hành, doanh thu theo kỳ hoặc mức tăng trưởng theo giai đoạn.
+    \item Mở rộng dashboard cho TV Shows hoặc tách riêng phim điện ảnh và phim truyền hình để so sánh hành vi đầu tư.
+    \item Tích hợp các mô hình phân cụm hoặc dự báo để đi từ ``mô tả'' sang ``khuyến nghị''.
+    \item Thêm chức năng drill-down sang từng phim, đạo diễn hoặc diễn viên để hỗ trợ phân tích trường hợp cụ thể.
 \end{itemize}
 
 \subsection{Kết luận ngắn}
-Dashboard đã giúp nhóm trả lời các câu hỏi trọng tâm về phân phối doanh số, tác động của chiết khấu và mối liên hệ giữa rating-review với doanh số. Các kết quả này hỗ trợ quyết định về danh mục và chiến lược bán hàng, đồng thời mở ra hướng phân tích sâu hơn trong các giai đoạn tiếp theo.
+Dashboard đã giúp nhóm chuyển bộ dữ liệu Netflix từ dạng bảng lớn sang một hệ thống trực quan hóa có cấu trúc rõ ràng theo khung What--Why--How. Kết quả nổi bật là nhóm nhận diện được mức tập trung quốc gia/ngôn ngữ, bức tranh chất lượng nội dung, hiệu quả đầu tư không hoàn toàn tuyến tính và vai trò của yếu tố sáng tạo đối với thành công của phim. Đây là nền tảng tốt để mở rộng sang các câu hỏi dự báo và tối ưu hóa danh mục trong các giai đoạn tiếp theo.

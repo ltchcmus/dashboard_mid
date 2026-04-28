@@ -1,20 +1,21 @@
 \section{Giới thiệu dữ liệu}
 
 \subsection{Bối cảnh bài toán (Domain Situation)}
-Thị trường sách trực tuyến tại Việt Nam có lượng sản phẩm lớn, dải giá rộng và mức khuyến mãi thay đổi liên tục. Nhóm đặt mục tiêu xác định các yếu tố có liên hệ với doanh số để hỗ trợ ra quyết định về danh mục, truyền thông và tối ưu giá bán.
+Netflix là một môi trường phân phối nội dung toàn cầu với danh mục phim đa quốc gia, đa ngôn ngữ và rất khác nhau về thể loại, mức độ phổ biến, điểm đánh giá, ngân sách và doanh thu. Khi số lượng phim lớn, người xem dashboard khó nắm được bức tranh tổng thể nếu chỉ đọc từng bản ghi riêng lẻ.
 
-Đối tượng sử dụng dashboard là người quản lý danh mục, nhà cung cấp sách và đội marketing trên sàn thương mại điện tử. Họ cần thấy nhanh bức tranh tổng quan (quy mô, phân phối doanh số, top nhà cung cấp), đồng thời có thể đi sâu vào chiết khấu, rating, review và thể loại để điều chỉnh chiến lược bán hàng.
+Nhóm chọn bài toán khám phá thư viện phim Netflix từ góc nhìn trực quan hóa dữ liệu. Đối tượng sử dụng dashboard là người học phân tích dữ liệu, người quản lý danh mục nội dung hoặc người cần khảo sát xu hướng phim toàn cầu. Họ muốn trả lời nhanh các câu hỏi như: nội dung tập trung ở quốc gia nào, ngôn ngữ nào chiếm ưu thế, chất lượng nội dung phân bố ra sao, mức đầu tư tài chính có đi kèm hiệu quả thương mại hay không, và cụm đạo diễn/diễn viên nào nổi bật.
 
 \subsection{Nguồn gốc dữ liệu}
 \begin{itemize}[leftmargin=2em]
-    \item Tên bộ dữ liệu: Tập dữ liệu sách từ sàn thương mại điện tử (Tiki).
-    \item Nguồn dữ liệu: Thu thập từ các trang sản phẩm sách trên \url{https://tiki.vn/}.
-    \item Thời điểm truy cập: 04/2026.
-    \item Điều kiện sử dụng: Chỉ dùng cho mục đích học tập, không thương mại.
+    \item Tên bộ dữ liệu gốc: \texttt{netflix\_movies\_detailed\_up\_to\_2025.csv}.
+    \item Vị trí trong repo: \texttt{data/raw/netflix\_movies\_detailed\_up\_to\_2025.csv}.
+    \item Dữ liệu sau làm sạch dùng cho dashboard: \texttt{data/processed/movies.csv} cùng các bảng phụ \texttt{movie\_countries.csv}, \texttt{movie\_genres.csv}, \texttt{movie\_directors.csv}, \texttt{movie\_casts.csv}.
+    \item Thời điểm nhóm sử dụng dữ liệu trong repo: 04/2026.
+    \item Mục đích sử dụng: học thuật, phục vụ đồ án giữa kỳ môn Trực quan hóa dữ liệu.
 \end{itemize}
 
 \subsection{Mô tả tổng quan dữ liệu}
-Dữ liệu ở dạng bảng, mỗi dòng là một sản phẩm sách. Các biến chính gồm giá bán, giá niêm yết, chiết khấu, rating, số lượt review, số trang, doanh số và thông tin nhà cung cấp/nhà xuất bản.
+Dữ liệu chính ở dạng bảng, mỗi dòng biểu diễn một phim. Từ tệp gốc gồm 16{,}000 bản ghi và 18 thuộc tính, nhóm làm sạch còn 15{,}239 phim trong bảng xử lý cuối cùng. Bộ dữ liệu trải dài từ năm 2010 đến 2025, bao phủ 133 quốc gia và 68 ngôn ngữ được chuẩn hóa để phục vụ trực quan hóa đa chiều.
 
 \begin{table}[H]
 \centering
@@ -23,17 +24,21 @@ Dữ liệu ở dạng bảng, mỗi dòng là một sản phẩm sách. Các bi
 \hline
 \textbf{Thông tin} & \textbf{Nội dung} \\
 \hline
-Tên bộ dữ liệu & Tiki Books Sales Dataset (tự thu thập) \\
+Tên bộ dữ liệu & Netflix Movies Detailed up to 2025 \\
 \hline
-Nguồn dữ liệu & Tiki.vn (truy cập 04/2026) \\
+Nguồn trong repo & \texttt{data/raw/netflix\_movies\_detailed\_up\_to\_2025.csv} \\
 \hline
-Đơn vị quan sát & Mỗi dòng là một sản phẩm sách \\
+Đơn vị quan sát & Mỗi dòng là một phim \\
 \hline
-Số lượng bản ghi & 132,955 (thô) / 36,763 (sau làm sạch) \\
+Số lượng bản ghi & 16{,}000 (thô) / 15{,}239 (sau làm sạch) \\
 \hline
-Số lượng thuộc tính & Khoảng 20 thuộc tính \\
+Số lượng thuộc tính & 18 thuộc tính chính trong bảng \texttt{movies.csv} \\
 \hline
-Dạng dữ liệu & Dữ liệu bảng (tabular), gồm biến định lượng và định tính \\
+Dạng dữ liệu & Dữ liệu bảng (tabular), kết hợp biến định danh, định tính, định lượng và mô tả văn bản \\
+\hline
+Miền thời gian & 2010--2025 \\
+\hline
+Mức phủ không gian & 133 quốc gia, 68 ngôn ngữ \\
 \hline
 \end{tabularx}
 \caption{Bảng tóm tắt dữ liệu đầu vào}
@@ -41,11 +46,11 @@ Dạng dữ liệu & Dữ liệu bảng (tabular), gồm biến định lượng
 
 \subsection{Tiền xử lý dữ liệu}
 \begin{itemize}[leftmargin=2em]
-    \item Loại bỏ bản ghi thiếu số trang, doanh số hoặc giá trị không hợp lệ.
-    \item Chuẩn hóa các trường số: giá, chiết khấu, review, doanh số.
-    \item Tạo biến dẫn xuất \texttt{log1p(doanh\_so)} để giảm lệch phân phối.
-    \item Gom nhóm chiết khấu và số trang để hỗ trợ so sánh theo dải.
-    \item Chuẩn hóa tên nhà cung cấp/nhà xuất bản và nhóm thể loại phổ biến.
+    \item Chuyển các trường \texttt{release\_year}, \texttt{vote\_average}, \texttt{popularity}, \texttt{vote\_count}, \texttt{budget}, \texttt{revenue} về kiểu số để tính toán ổn định trong dashboard.
+    \item Chuẩn hóa tên quốc gia và ngôn ngữ thông qua lớp dịch \texttt{TranslationService}, giúp hiển thị nhất quán giữa dữ liệu và giao diện tiếng Việt.
+    \item Tách các cột danh sách như \texttt{genres}, \texttt{director}, \texttt{cast} thành các bảng bridge để phục vụ phân tích theo thể loại, đạo diễn và diễn viên.
+    \item Giữ lại các biến tài chính cần thiết để tính ROI và so sánh ngân sách--doanh thu.
+    \item Loại bỏ hoặc bỏ qua các trường không còn dùng trực tiếp trong dashboard, ví dụ \texttt{duration} và \texttt{language} ở tệp gốc.
 \end{itemize}
 
 \subsection{Bảng mô tả các biến quan trọng}
@@ -58,22 +63,24 @@ Dạng dữ liệu & Dữ liệu bảng (tabular), gồm biến định lượng
 \textbf{Biến} & \textbf{Kiểu dữ liệu} & \textbf{Vai trò} & \textbf{Ý nghĩa} \\
 \hline
 \endhead
-\texttt{price} & Quantitative & Biểu đồ giá & Giá bán hiện tại của sách \\
+\texttt{release\_year} & Ordered & Trục thời gian & Năm phát hành phim \\
 \hline
-\texttt{list\_price} & Quantitative & So sánh giá & Giá niêm yết trước giảm \\
+\texttt{country} / bảng \texttt{movie\_countries} & Categorical & Bản đồ quốc gia & Quốc gia sản xuất hoặc phát hành được gán cho phim \\
 \hline
-\texttt{discount\_rate} & Quantitative & Biểu đồ chiết khấu & Tỷ lệ chiết khấu (0--1) \\
+\texttt{language\_name} & Categorical & Treemap ngôn ngữ & Ngôn ngữ hiển thị chính của phim \\
 \hline
-\texttt{rating\_average} & Quantitative & Heatmap/Scatter & Điểm đánh giá trung bình (1--5) \\
+\texttt{genres} & Categorical (list) & Phân tích thể loại & Danh sách thể loại của phim; được tách thành bảng thể loại chi tiết \\
 \hline
-\texttt{review\_count} & Quantitative & Heatmap/Scatter & Số lượt review của sản phẩm \\
+\texttt{vote\_average} & Quantitative & Chất lượng nội dung & Điểm đánh giá trung bình của phim \\
 \hline
-\texttt{number\_of\_page} & Quantitative & Scatter/Bar & Số trang của sách \\
+\texttt{popularity} & Quantitative & Mức độ quan tâm & Chỉ báo mức độ phổ biến của phim \\
 \hline
-\texttt{all\_time\_quantity\_sold} & Quantitative & Target & Doanh số tích lũy (đơn vị bán) \\
+\texttt{budget} & Quantitative & Phân tích tài chính & Ngân sách sản xuất \\
 \hline
-\texttt{publisher\_vn\_mapped} & Categorical & Top nhà cung cấp & Nhóm nhà cung cấp/nhà xuất bản \\
+\texttt{revenue} & Quantitative & Phân tích tài chính & Doanh thu của phim \\
 \hline
-\texttt{cat\_level\_2\_mapped} & Categorical & Thể loại & Nhóm thể loại sách cấp 2 \\
+\texttt{director} / bảng \texttt{movie\_directors} & Categorical (list) & Góc nhìn sáng tạo & Đạo diễn của phim, dùng để tổng hợp doanh thu và điểm trung bình \\
+\hline
+\texttt{cast} / bảng \texttt{movie\_casts} & Categorical (list) & Góc nhìn sáng tạo & Dàn diễn viên, dùng để tìm nhóm kéo doanh thu \\
 \hline
 \end{longtable}

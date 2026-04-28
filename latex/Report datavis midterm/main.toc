@@ -1,0 +1,28 @@
+\contentsline {section}{\numberline {1}Thông tin nhóm}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Danh sách thành viên}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Phân công công việc và mức độ đóng góp}{1}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Giới thiệu dữ liệu}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Bối cảnh bài toán (Domain Situation)}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Nguồn gốc dữ liệu}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Mô tả tổng quan dữ liệu}{2}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Tiền xử lý dữ liệu}{3}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Bảng mô tả các biến quan trọng}{3}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Phân tích What-Why}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}What -- Phân tích dữ liệu}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Why -- Câu hỏi phân tích và nhiệm vụ trực quan}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Phạm vi dashboard}{6}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Thiết kế dashboard và kết quả}{6}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Tổng quan dashboard}{6}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Thiết kế từng biểu đồ thành phần}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Biện luận thiết kế tổng thể}{11}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Kết quả chính rút ra từ dashboard}{12}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Thảo luận}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Khó khăn gặp phải}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Hạn chế của thiết kế hiện tại}{13}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Hướng phát triển}{13}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Kết luận ngắn}{13}{subsection.5.4}%
+\contentsline {section}{Tài liệu tham khảo}{14}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Phụ lục}{14}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Tóm tắt ảnh đã tạo bằng code}{14}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Ảnh cần bổ sung thủ công}{14}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Gợi ý thao tác lấy ảnh}{15}{subsection.6.3}%

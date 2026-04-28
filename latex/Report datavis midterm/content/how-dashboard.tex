@@ -1,100 +1,130 @@
 \section{Thiết kế dashboard và kết quả}
 
 \subsection{Tổng quan dashboard}
-Dashboard được chia thành các khối phân tích rõ ràng, giúp người đọc đi từ tổng quan đến chi tiết:
+Dashboard được xây dựng bằng Streamlit, chia thành 4 tab phân tích có liên kết qua bộ lọc toàn cục. Luồng đọc đi từ ``Toàn cảnh'' sang ``Chất lượng'', ``Tài chính'' và ``Sáng tạo'', giúp người dùng đi từ bức tranh hệ thống đến các mối quan hệ chuyên sâu.
 \begin{itemize}[leftmargin=2em]
-    \item Khu vực bộ lọc: thể loại, nhà cung cấp, dải giá và mức chiết khấu.
-    \item Khu vực overview: phân bố doanh số và top nhà cung cấp.
-    \item Khu vực phân tích chi tiết: rating-review, độ dày sách, cấu trúc thể loại.
-    \item Các biểu đồ liên kết qua bộ lọc để khoanh vùng phân tích.
+    \item Bộ lọc chung theo năm phát hành, ngôn ngữ, quốc gia và thể loại.
+    \item Tab \textbf{Toàn cảnh}: bản đồ quốc gia, treemap ngôn ngữ, bar chart thể loại và line chart theo năm.
+    \item Tab \textbf{Chất lượng}: donut phân bố điểm, bar chart thể loại chất lượng cao, heatmap ngân sách--điểm số, bar có sai số theo thể loại.
+    \item Tab \textbf{Tài chính}: top ROI, xu hướng ngân sách theo thời gian và bubble chart ngân sách--doanh thu.
+    \item Tab \textbf{Sáng tạo}: scatter đạo diễn, bar diễn viên và biểu đồ kết hợp số thể loại với độ phổ biến/điểm số.
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/Thinh/2.2.png}
-    \caption{Tổng quan dashboard (lát cắt Top 10 nhà cung cấp theo doanh số)}
+    \fbox{\parbox{0.92\textwidth}{
+    \centering
+    \textbf{Ảnh cần bổ sung thủ công: Screenshot toàn bộ dashboard}\\
+    Vị trí đề xuất: chụp màn hình dashboard ở trạng thái mặc định sau khi chạy \texttt{streamlit run src/main.py}.\\
+    Ảnh này không thể suy ra chính xác chỉ bằng code vì cần giao diện thật của ứng dụng đang render.
+    }}
+    \caption{Placeholder cho ảnh chụp toàn bộ dashboard}
 \end{figure}
 
 \subsection{Thiết kế từng biểu đồ thành phần}
 
-\subsubsection*{Biểu đồ 1 -- Phân bố số trang theo thể loại (Top 12)}
+\subsubsection*{Biểu đồ 1 -- Bản đồ số lượng phim theo quốc gia}
 
-\textbf{Mục tiêu:} So sánh cấu trúc số trang của các thể loại nổi bật.\\
-\textbf{Kênh thị giác:} Stacked bar; độ dài biểu diễn số lượng, màu biểu diễn nhóm số trang.\\
-\textbf{Lý do lựa chọn:} Giúp nhìn đồng thời quy mô và thành phần số trang theo từng thể loại.\\
-\textbf{Insight rút ra:} Một số thể loại có tỉ lệ sách mỏng cao, trong khi nhóm học thuật/thiếu nhi thường dày hơn.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=.85\textwidth]{img/De/stacked_bar.png}
-    \caption{Phân bố số trang theo thể loại (Top 12)}
-\end{figure}
-
-\subsubsection*{Biểu đồ 2 -- Bản đồ nhiệt Rating vs Review}
-
-\textbf{Mục tiêu:} Xác định vùng rating và review tạo doanh số cao.\\
-\textbf{Kênh thị giác:} Heatmap; vị trí là rating-review, màu biểu diễn mức doanh số.\\
-\textbf{Insight rút ra:} Doanh số cao thường tập trung ở nhóm rating cao và review đủ lớn, thể hiện vai trò của đánh giá và mức độ quan tâm.
+\textbf{Mục tiêu:} Xác định các thị trường có độ phủ phim lớn và hỗ trợ lọc chéo theo không gian.\\
+\textbf{Kênh thị giác:} Choropleth map; vị trí biểu diễn quốc gia, sắc độ màu biểu diễn số lượng phim theo thang log.\\
+\textbf{Lý do lựa chọn:} Bài toán có thành phần không gian nên bản đồ là lựa chọn trực quan nhất để đọc độ phủ theo quốc gia.\\
+\textbf{Insight rút ra:} Dữ liệu tập trung mạnh ở Hoa Kỳ, sau đó đến Anh, Pháp, Canada, Nhật Bản và Hàn Quốc; đây là lớp thị trường trụ cột của thư viện.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.85\textwidth]{img/Thinh/1.1.png}
-    \caption{Bản đồ nhiệt Rating vs Review}
+    \includegraphics[width=.82\textwidth]{img/generated/overview_top_countries.png}
+    \caption{Hình tĩnh thay thế cho góc nhìn quốc gia: top quốc gia theo số lượng phim}
 \end{figure}
 
-\subsubsection*{Biểu đồ 3 -- Doanh số theo dải chiết khấu}
+\subsubsection*{Biểu đồ 2 -- Cơ cấu ngôn ngữ của thư viện phim}
 
-Biểu đồ thể hiện doanh số trung bình theo các dải chiết khấu. Cách chia dải giúp so sánh nhóm khuyến mãi thấp, trung bình và cao, từ đó xác định “vùng chiết khấu hiệu quả” thay vì chỉ nhìn từng giá trị đơn lẻ.
+\textbf{Mục tiêu:} Đánh giá mức tập trung hay đa dạng ngôn ngữ trong danh mục.\\
+\textbf{Kênh thị giác:} Treemap trong dashboard; hình tĩnh ở báo cáo dùng bar chart top ngôn ngữ để dễ in PDF.\\
+\textbf{Insight rút ra:} Tiếng Anh áp đảo so với các ngôn ngữ còn lại, nhưng nhóm tiếng Pháp, Nhật, Hàn và Tây Ban Nha vẫn tạo thành các cụm quan trọng cho phân tích khu vực.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.85\textwidth]{img/De/eda_figure_04_discount_sweetspot_sales.png}
-    \caption{Doanh số trung bình theo dải chiết khấu}
+    \includegraphics[width=.82\textwidth]{img/generated/overview_top_languages.png}
+    \caption{Hình tĩnh thay thế cho góc nhìn ngôn ngữ: top ngôn ngữ theo số lượng phim}
 \end{figure}
 
-\subsubsection*{Biểu đồ 4 -- Phân bố doanh số và biến đổi log}
+\subsubsection*{Biểu đồ 3 -- Phân bố chất lượng nội dung}
 
-Doanh số có phân phối lệch mạnh, nên nhóm dùng biến đổi log để nhìn rõ phần “đuôi dài”. Biểu đồ giúp kiểm tra tính hợp lý của thao tác log và cho thấy sự tập trung của doanh số ở một số lượng nhỏ sản phẩm.
+\textbf{Mục tiêu:} Cho biết thư viện phim đang nghiêng về khoảng điểm nào và liệu nội dung chất lượng rất cao có chiếm tỷ trọng lớn hay không.\\
+\textbf{Kênh thị giác:} Donut chart trong dashboard; hình tĩnh ở báo cáo dùng bar chart theo bucket điểm để tránh mất nhãn khi in.\\
+\textbf{Lý do lựa chọn:} Donut giúp xem tỷ trọng tổng thể, còn bucket hóa hỗ trợ người đọc xác định nhanh nhóm ``Khá'' và ``Tốt'' có phải là phần lõi của thư viện hay không.\\
+\textbf{Insight rút ra:} Phim tập trung chủ yếu ở hai nhóm \textit{Khá} và \textit{Tốt}; nhóm \textit{Xuất sắc} tồn tại nhưng chiếm tỷ lệ nhỏ.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.85\textwidth]{img/De/eda_figure_02_target_distribution_before_after_log.png}
-    \caption{Phân bố doanh số trước và sau khi log}
+    \includegraphics[width=.78\textwidth]{img/generated/quality_rating_distribution.png}
+    \caption{Phân bố số lượng phim theo nhóm điểm đánh giá}
 \end{figure}
 
-\subsubsection*{Biểu đồ 5 -- Top nhà cung cấp theo doanh số}
+\subsubsection*{Biểu đồ 4 -- Top dự án có ROI cao nhất}
 
-Biểu đồ xếp hạng cho thấy mức độ tập trung doanh số vào một số nhà cung cấp lớn. Đây là cơ sở để ưu tiên hợp tác, đàm phán chương trình khuyến mãi, hoặc điều chỉnh danh mục.
+\textbf{Mục tiêu:} Tìm ra các phim có tỷ suất lợi nhuận nổi bật sau khi loại bỏ trường hợp ngân sách quá nhỏ hoặc thiếu dữ liệu doanh thu.\\
+\textbf{Kênh thị giác:} Horizontal bar chart; chiều dài thanh biểu diễn ROI.\\
+\textbf{Lý do lựa chọn:} Đây là nhiệm vụ xếp hạng nên bar chart ngang giúp đọc tên phim dài tốt hơn và cho phép so sánh chênh lệch ROI trực tiếp.\\
+\textbf{Insight rút ra:} Một số phim có ngân sách thấp nhưng doanh thu bứt phá mạnh, tạo ROI rất cao; điều này cho thấy thành công thương mại không luôn tỷ lệ thuận với quy mô đầu tư.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.85\textwidth]{img/Top15ThiPhan.png}
-    \caption{Top nhà cung cấp theo doanh số}
+    \includegraphics[width=.88\textwidth]{img/generated/finance_top_roi.png}
+    \caption{Top 10 phim có ROI cao nhất trong dữ liệu}
 \end{figure}
 
-\subsubsection*{Biểu đồ 6 -- Độ dày sách vs Doanh số}
+\subsubsection*{Biểu đồ 5 -- Tác động của số lượng thể loại đến thành công}
 
-Biểu đồ phân tán cho thấy mối liên hệ giữa số trang và doanh số. Qua đó, nhóm quan sát được rằng độ dày không quyết định trực tiếp doanh số, mà còn phụ thuộc vào thể loại và mức độ quan tâm của người đọc.
+\textbf{Mục tiêu:} Kiểm tra xem phim có nhiều thể loại hơn có đồng thời đi kèm độ phổ biến và điểm đánh giá cao hơn hay không.\\
+\textbf{Kênh thị giác:} Biểu đồ kết hợp cột--đường với trục kép.\\
+\textbf{Lý do lựa chọn:} Cần so sánh đồng thời hai chỉ số đầu ra trên cùng một biến đầu vào là số lượng thể loại.\\
+\textbf{Insight rút ra:} Các phim có nhiều hơn một thể loại thường cho tín hiệu tốt hơn về độ phổ biến; tuy nhiên phần điểm đánh giá cần đọc kèm bối cảnh bộ lọc và không nên diễn giải như quan hệ nhân quả chắc chắn.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.85\textwidth]{img/Quan/scatter.png}
-    \caption{Độ dày sách và doanh số}
+    \includegraphics[width=.82\textwidth]{img/generated/creative_genre_mix.png}
+    \caption{Tác động của mức đa dạng thể loại đến độ phổ biến và điểm trung bình}
 \end{figure}
+
+\subsubsection*{Biểu đồ 6 -- Screenshot các tab cần bổ sung thủ công}
+
+Ngoài các hình tĩnh có thể sinh bằng code, báo cáo vẫn cần một số ảnh chụp đúng giao diện dashboard để thỏa yêu cầu ``Thiết kế \& Kết quả''. Các ảnh này nên được lấy trực tiếp khi chạy app để giữ đúng màu sắc, bố cục và tương tác.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{3.3cm}|p{4.2cm}|X|}
+\hline
+\textbf{Ảnh cần lấy} & \textbf{Chèn vào đâu} & \textbf{Ghi chú} \\
+\hline
+Screenshot toàn bộ dashboard & Ngay sau mục ``Tổng quan dashboard'' & Chụp trạng thái mặc định, sidebar mở, đủ 4 tab. \\
+\hline
+Screenshot tab Toàn cảnh & Sau Biểu đồ 2 hoặc thêm vào phụ lục & Nên hiển thị đồng thời bản đồ, treemap ngôn ngữ và line chart theo năm. \\
+\hline
+Screenshot tab Chất lượng & Sau Biểu đồ 3 hoặc thêm vào phụ lục & Nên giữ donut, bar chart và heatmap trong cùng một ảnh. \\
+\hline
+Screenshot tab Tài chính & Sau Biểu đồ 4 hoặc thêm vào phụ lục & Nên thấy đồng thời top ROI, line chart ngân sách và bubble chart. \\
+\hline
+Screenshot tab Sáng tạo & Sau Biểu đồ 5 hoặc thêm vào phụ lục & Nên thấy scatter đạo diễn, bar diễn viên và biểu đồ số thể loại. \\
+\hline
+\end{tabularx}
+\caption{Danh sách ảnh giao diện cần bổ sung thủ công}
+\end{table}
 
 \subsection{Biện luận thiết kế tổng thể}
 \begin{itemize}[leftmargin=2em]
-    \item Bố cục ưu tiên tổng quan trước, sau đó đi sâu vào mối quan hệ giữa các biến.
-    \item Màu sắc tiết chế, tập trung vào độ tương phản để người đọc dễ so sánh.
-    \item Sử dụng thang log cho doanh số để giảm lệch và làm rõ phần đuôi dài.
-    \item Các biểu đồ chọn theo nguyên tắc: so sánh (bar), tương quan (scatter/heatmap), phân bố (histogram/violin).
+    \item Bố cục ưu tiên câu chuyện từ phạm vi toàn cầu đến insight cấp đối tượng cụ thể, tương ứng với trật tự 4 tab.
+    \item Màu sắc bám theo bộ nhận diện Netflix với đỏ làm màu nhấn, vàng cho điểm sáng và xám/trắng làm nền trung tính.
+    \item Các biểu đồ được chọn đúng theo task: bản đồ cho câu hỏi không gian, treemap cho tỷ trọng, bar chart cho xếp hạng, line chart cho xu hướng, bubble/scatter cho quan hệ nhiều biến.
+    \item Dashboard dùng bộ lọc chéo để người xem chuyển từ mức tổng quan sang các lát cắt nhỏ mà không cần rời khỏi cùng một màn hình làm việc.
 \end{itemize}
 
 \subsection{Kết quả chính rút ra từ dashboard}
 \begin{itemize}[leftmargin=2em]
-    \item Doanh số có phân phối long-tail, chỉ một nhóm nhỏ sản phẩm tạo phần lớn doanh thu.
-    \item Chiết khấu ở dải trung bình thường gắn với doanh số tốt hơn so với mức quá thấp hoặc quá cao.
-    \item Rating và review là tín hiệu mạnh để dự báo doanh số, đặc biệt ở vùng rating cao.
-    \item Doanh số tập trung vào một số nhà cung cấp lớn; phần còn lại phân tán theo long-tail.
-    \item Cấu trúc số trang khác nhau giữa các thể loại, gợi ý chiến lược sản phẩm theo danh mục.
+    \item Thư viện phim có mức tập trung cao theo quốc gia và ngôn ngữ, với Hoa Kỳ và tiếng Anh giữ vai trò áp đảo.
+    \item Chất lượng nội dung chủ yếu nằm ở vùng trung bình khá đến tốt, rất ít phim nằm ở nhóm xuất sắc.
+    \item Hiệu quả tài chính không hoàn toàn tuyến tính theo ngân sách; tồn tại nhiều trường hợp ROI rất cao ở nhóm đầu tư thấp hơn.
+    \item Một số đạo diễn và diễn viên tạo cụm nổi bật cả về chất lượng lẫn doanh thu, cho thấy vai trò của yếu tố sáng tạo trong thành công thương mại.
+    \item Độ đa dạng thể loại có liên hệ đáng chú ý với độ phổ biến, gợi ý tiềm năng của các phim lai thể loại trong danh mục.
 \end{itemize}
