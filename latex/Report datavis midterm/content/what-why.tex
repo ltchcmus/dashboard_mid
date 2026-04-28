@@ -1,0 +1,75 @@
+\section{Phân tích What-Why}
+
+\subsection{What -- Phân tích dữ liệu}
+Dữ liệu là dạng bảng với hai nhóm biến chính:
+\begin{itemize}[leftmargin=2em]
+    \item Biến định lượng: giá, chiết khấu, doanh số, điểm rating, số review, số trang.
+    \item Biến định tính: nhà cung cấp, nhà xuất bản, thể loại, nhóm giá.
+\end{itemize}
+
+Phân phối doanh số lệch mạnh (đuôi dài), vì vậy cần biến đổi log để nhìn rõ chênh lệch giữa các nhóm. Một số biến có tính thứ bậc (nhóm chiết khấu, nhóm số trang) phù hợp cho so sánh theo dải.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{3.4cm}|p{2.8cm}|p{3cm}|X|}
+\hline
+\textbf{Biến} & \textbf{Type} & \textbf{Miền giá trị} & \textbf{Ghi chú cho trực quan hóa} \\
+\hline
+\texttt{discount\_rate} & Quantitative & 0--1 & Phù hợp phân tích tác động khuyến mãi \\
+\hline
+\texttt{rating\_average} & Quantitative & 1--5 & So sánh chất lượng cảm nhận \\
+\hline
+\texttt{review\_count} & Quantitative & 0+ & Dùng kiểm tra mức độ quan tâm \\
+\hline
+\texttt{all\_time\_quantity\_sold} & Quantitative & 0+ & Biến mục tiêu doanh số \\
+\hline
+\texttt{publisher\_vn\_mapped} & Categorical & NXB/nhà cung cấp & Nhóm để so sánh thị phần \\
+\hline
+\texttt{cat\_level\_2\_mapped} & Categorical & Thể loại & Phân tích theo danh mục \\
+\hline
+\end{tabularx}
+\caption{Bảng phân tích biến số theo What}
+\end{table}
+
+\subsection{Why -- Câu hỏi phân tích và nhiệm vụ trực quan}
+Các câu hỏi trọng tâm của nhóm:
+\begin{enumerate}[leftmargin=2em]
+    \item Doanh số phân bố ra sao và có hiệu ứng long-tail không?
+    \item Mức chiết khấu nào gắn với doanh số trung bình cao?
+    \item Rating và số review có liên hệ như thế nào với doanh số?
+    \item Nhà cung cấp/nhà xuất bản nào đóng góp doanh số lớn nhất?
+    \item Thể loại nào đang nổi bật và có cấu trúc số trang đặc thù?
+\end{enumerate}
+
+Nhóm ánh xạ các câu hỏi trên sang nhiệm vụ trực quan để đảm bảo mỗi biểu đồ đều phục vụ một quyết định cụ thể.
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{4.8cm}|p{3cm}|X|}
+\hline
+\textbf{Câu hỏi phân tích} & \textbf{Task} & \textbf{Mô tả thao tác người dùng} \\
+\hline
+Phân bố doanh số có long-tail? & Analyze distribution & Quan sát phân phối và log-scale \\
+\hline
+Chiết khấu ảnh hưởng doanh số? & Compare groups & So sánh theo dải chiết khấu \\
+\hline
+Rating/Review liên quan doanh số? & Find correlation & Quan sát heatmap hoặc scatter \\
+\hline
+Nhà cung cấp nào dẫn đầu? & Rank / Compare & Xem top-$k$ và thị phần \\
+\hline
+Thể loại nào nổi bật? & Compare categories & So sánh theo thể loại và nhóm số trang \\
+\hline
+\end{tabularx}
+\caption{Ánh xạ câu hỏi phân tích sang nhiệm vụ trực quan}
+\end{table}
+
+\subsection{Phạm vi dashboard}
+Dashboard tập trung vào 5 câu hỏi trọng tâm:
+\begin{itemize}[leftmargin=2em]
+    \item Bức tranh phân phối doanh số và long-tail.
+    \item Tác động của chiết khấu lên doanh số.
+    \item Liên hệ giữa rating, review và doanh số.
+    \item Top nhà cung cấp/nhà xuất bản và thị phần.
+    \item So sánh theo thể loại và nhóm số trang.
+\end{itemize}

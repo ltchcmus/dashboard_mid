@@ -36,6 +36,7 @@ Dashboard-Mid/
 |  |- models/
 |  |- prompts/
 |  |- utils/
+|- config.yaml
 |- requirements.txt
 |- dockerfile
 ```

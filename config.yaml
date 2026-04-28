@@ -1,0 +1,161 @@
+app:
+  title: "Bảng điều khiển phân tích dữ liệu Netflix"
+  data_dir: "data/processed"
+  font_family: '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+  theme:
+    app_background: "linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 42%, #F4FFFF 100%)"
+    sidebar_background: "linear-gradient(180deg, #FFFFFF 0%, #F5FBFB 100%)"
+    header_height_px: 72
+    header_font_size_rem: 2.2
+    main_padding_top_rem: 4.8
+    tab_font_size_rem: 1.22
+    tab_font_size_active_rem: 1.28
+
+colors:
+  netflix_red: "#E50914"
+  netflix_gold: "#FFB100"
+  text_dark: "#1F2937"
+  chart_bg: "#FFFFFF"
+  neutral_grey: "#BFBFBF"
+
+palettes:
+  seq_count:
+    - "#FFEBEE"
+    - "#E50914"
+    - "#80060B"
+  diverge_quality:
+    - "#E50914"
+    - "#F8F9FA"
+    - "#FFB100"
+  cat_genre:
+    - "#E50914"
+    - "#221F1F"
+    - "#FFB100"
+    - "#F5F5F1"
+    - "#564D4D"
+    - "#B20710"
+    - "#831010"
+    - "#E1E1E1"
+  vivid_genre:
+    - "#E50914"
+    - "#FF7A00"
+    - "#FFB100"
+    - "#00A676"
+    - "#00A8E8"
+    - "#6A4CFF"
+    - "#FF3CAC"
+    - "#17BEBB"
+    - "#1D4ED8"
+
+quality_bucket_colors:
+  "Kém (0-5)": "#B22222"
+  "TB (5-6)": "#D96B6B"
+  "Khá (6-7)": "#E5E7EB"
+  "Tốt (7-8)": "#FFB100"
+  "Xuất sắc (8-10)": "#00A651"
+
+mappings:
+  genre_vi:
+    "Action": "Hành động"
+    "Adventure": "Phiêu lưu"
+    "Animation": "Hoạt hình"
+    "Comedy": "Hài"
+    "Crime": "Tội phạm"
+    "Documentary": "Tài liệu"
+    "Drama": "Chính kịch"
+    "Family": "Gia đình"
+    "Fantasy": "Kỳ ảo"
+    "History": "Lịch sử"
+    "Horror": "Kinh dị"
+    "Music": "Âm nhạc"
+    "Mystery": "Bí ẩn"
+    "Romance": "Lãng mạn"
+    "Science Fiction": "Khoa học viễn tưởng"
+    "TV Movie": "Phim truyền hình"
+    "Thriller": "Giật gân"
+    "War": "Chiến tranh"
+    "Western": "Viễn Tây"
+
+  language_fallback:
+    "en": "Tiếng Anh"
+    "fr": "Tiếng Pháp"
+    "ja": "Tiếng Nhật"
+    "ko": "Tiếng Hàn"
+    "es": "Tiếng Tây Ban Nha"
+    "de": "Tiếng Đức"
+    "it": "Tiếng Ý"
+    "pt": "Tiếng Bồ Đào Nha"
+    "ru": "Tiếng Nga"
+    "zh": "Tiếng Trung"
+    "hi": "Tiếng Hindi"
+    "vi": "Tiếng Việt"
+    "ar": "Tiếng Ả Rập"
+    "th": "Tiếng Thái"
+    "id": "Tiếng Indonesia"
+    "tr": "Tiếng Thổ Nhĩ Kỳ"
+    "pl": "Tiếng Ba Lan"
+    "nl": "Tiếng Hà Lan"
+    "sv": "Tiếng Thụy Điển"
+    "da": "Tiếng Đan Mạch"
+    "no": "Tiếng Na Uy"
+    "fi": "Tiếng Phần Lan"
+    "cs": "Tiếng Séc"
+    "el": "Tiếng Hy Lạp"
+    "he": "Tiếng Do Thái"
+    "fa": "Tiếng Ba Tư"
+    "uk": "Tiếng Ukraina"
+    "ro": "Tiếng Romania"
+    "hu": "Tiếng Hungary"
+    "bn": "Tiếng Bengal"
+
+  language_alias:
+    "cn": "zh"
+    "zh-cn": "zh"
+    "zh-tw": "zh"
+    "pt-br": "pt"
+    "pt-pt": "pt"
+
+  country_alias:
+    "united states of america": "United States"
+    "uk": "United Kingdom"
+    "south korea": "Korea, Republic of"
+    "north korea": "Korea, Democratic People's Republic of"
+    "czech republic": "Czechia"
+    "russia": "Russian Federation"
+    "vietnam": "Viet Nam"
+    "laos": "Lao People's Democratic Republic"
+    "syria": "Syrian Arab Republic"
+    "moldova": "Moldova, Republic of"
+    "venezuela": "Venezuela, Bolivarian Republic of"
+    "tanzania": "Tanzania, United Republic of"
+    "iran": "Iran, Islamic Republic of"
+    "bolivia": "Bolivia, Plurinational State of"
+    "palestine": "Palestine, State of"
+    "ivory coast": "Côte d'Ivoire"
+
+  country_fallback:
+    "United States of America": "Hoa Kỳ"
+    "United States": "Hoa Kỳ"
+    "United Kingdom": "Vương quốc Anh"
+    "South Korea": "Hàn Quốc"
+    "Japan": "Nhật Bản"
+    "France": "Pháp"
+    "Germany": "Đức"
+    "Spain": "Tây Ban Nha"
+    "Italy": "Ý"
+    "China": "Trung Quốc"
+    "India": "Ấn Độ"
+    "Mexico": "Mexico"
+    "Canada": "Canada"
+    "Australia": "Úc"
+    "Thailand": "Thái Lan"
+    "Indonesia": "Indonesia"
+    "Vietnam": "Việt Nam"
+    "Viet Nam": "Việt Nam"
+    "Russia": "Nga"
+    "Russian Federation": "Nga"
+
+thresholds:
+  min_budget: 5000
+  min_revenue: 0
+  high_quality_vote: 7.5

@@ -1,0 +1,79 @@
+\section{Giới thiệu dữ liệu}
+
+\subsection{Bối cảnh bài toán (Domain Situation)}
+Thị trường sách trực tuyến tại Việt Nam có lượng sản phẩm lớn, dải giá rộng và mức khuyến mãi thay đổi liên tục. Nhóm đặt mục tiêu xác định các yếu tố có liên hệ với doanh số để hỗ trợ ra quyết định về danh mục, truyền thông và tối ưu giá bán.
+
+Đối tượng sử dụng dashboard là người quản lý danh mục, nhà cung cấp sách và đội marketing trên sàn thương mại điện tử. Họ cần thấy nhanh bức tranh tổng quan (quy mô, phân phối doanh số, top nhà cung cấp), đồng thời có thể đi sâu vào chiết khấu, rating, review và thể loại để điều chỉnh chiến lược bán hàng.
+
+\subsection{Nguồn gốc dữ liệu}
+\begin{itemize}[leftmargin=2em]
+    \item Tên bộ dữ liệu: Tập dữ liệu sách từ sàn thương mại điện tử (Tiki).
+    \item Nguồn dữ liệu: Thu thập từ các trang sản phẩm sách trên \url{https://tiki.vn/}.
+    \item Thời điểm truy cập: 04/2026.
+    \item Điều kiện sử dụng: Chỉ dùng cho mục đích học tập, không thương mại.
+\end{itemize}
+
+\subsection{Mô tả tổng quan dữ liệu}
+Dữ liệu ở dạng bảng, mỗi dòng là một sản phẩm sách. Các biến chính gồm giá bán, giá niêm yết, chiết khấu, rating, số lượt review, số trang, doanh số và thông tin nhà cung cấp/nhà xuất bản.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{4cm}|X|}
+\hline
+\textbf{Thông tin} & \textbf{Nội dung} \\
+\hline
+Tên bộ dữ liệu & Tiki Books Sales Dataset (tự thu thập) \\
+\hline
+Nguồn dữ liệu & Tiki.vn (truy cập 04/2026) \\
+\hline
+Đơn vị quan sát & Mỗi dòng là một sản phẩm sách \\
+\hline
+Số lượng bản ghi & 132,955 (thô) / 36,763 (sau làm sạch) \\
+\hline
+Số lượng thuộc tính & Khoảng 20 thuộc tính \\
+\hline
+Dạng dữ liệu & Dữ liệu bảng (tabular), gồm biến định lượng và định tính \\
+\hline
+\end{tabularx}
+\caption{Bảng tóm tắt dữ liệu đầu vào}
+\end{table}
+
+\subsection{Tiền xử lý dữ liệu}
+\begin{itemize}[leftmargin=2em]
+    \item Loại bỏ bản ghi thiếu số trang, doanh số hoặc giá trị không hợp lệ.
+    \item Chuẩn hóa các trường số: giá, chiết khấu, review, doanh số.
+    \item Tạo biến dẫn xuất \texttt{log1p(doanh\_so)} để giảm lệch phân phối.
+    \item Gom nhóm chiết khấu và số trang để hỗ trợ so sánh theo dải.
+    \item Chuẩn hóa tên nhà cung cấp/nhà xuất bản và nhóm thể loại phổ biến.
+\end{itemize}
+
+\subsection{Bảng mô tả các biến quan trọng}
+\begin{longtable}{|p{3cm}|p{2.8cm}|p{3cm}|p{5.2cm}|}
+\hline
+\textbf{Biến} & \textbf{Kiểu dữ liệu} & \textbf{Vai trò} & \textbf{Ý nghĩa} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Biến} & \textbf{Kiểu dữ liệu} & \textbf{Vai trò} & \textbf{Ý nghĩa} \\
+\hline
+\endhead
+\texttt{price} & Quantitative & Biểu đồ giá & Giá bán hiện tại của sách \\
+\hline
+\texttt{list\_price} & Quantitative & So sánh giá & Giá niêm yết trước giảm \\
+\hline
+\texttt{discount\_rate} & Quantitative & Biểu đồ chiết khấu & Tỷ lệ chiết khấu (0--1) \\
+\hline
+\texttt{rating\_average} & Quantitative & Heatmap/Scatter & Điểm đánh giá trung bình (1--5) \\
+\hline
+\texttt{review\_count} & Quantitative & Heatmap/Scatter & Số lượt review của sản phẩm \\
+\hline
+\texttt{number\_of\_page} & Quantitative & Scatter/Bar & Số trang của sách \\
+\hline
+\texttt{all\_time\_quantity\_sold} & Quantitative & Target & Doanh số tích lũy (đơn vị bán) \\
+\hline
+\texttt{publisher\_vn\_mapped} & Categorical & Top nhà cung cấp & Nhóm nhà cung cấp/nhà xuất bản \\
+\hline
+\texttt{cat\_level\_2\_mapped} & Categorical & Thể loại & Nhóm thể loại sách cấp 2 \\
+\hline
+\end{longtable}

@@ -33,6 +33,7 @@ description: "Use when working in this repository to follow a fixed workflow: in
 
 ## Folder Contracts
 
+- `config.yaml`: Central configuration for dashboard settings.
 - `src/`: Application source code.
 - `data/raw/`: Raw immutable input data.
 - `data/outputs/slides/markdown/`: Generated markdown slide content.

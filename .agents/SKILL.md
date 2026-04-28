@@ -35,6 +35,7 @@ Canonical skill path: `./skills/dashboard-mid/SKILL.md`.
 
 ## Folder Contracts
 
+- `config.yaml`: Central configuration for dashboard settings.
 - `src/`: Application source code.
 - `data/raw/`: Raw immutable input data.
 - `data/outputs/slides/markdown/`: Generated markdown slide content.

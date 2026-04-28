@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+
+\usepackage{hcmus-report-template}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage[colorlinks=true,linkcolor=blue, citecolor=red]{hyperref}
+\usepackage{url}
+\usepackage[top=.75in, left=.75in, right=.75in, bottom=1in]{geometry}
+\usepackage[utf8]{vietnam}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\usepackage{enumitem}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\baselinestretch}{1.15}
+
+\newcommand{\coursename}{Trực quan hóa dữ liệu}
+\newcommand{\reportname}{Phân tích doanh số sách trên sàn thương mại điện tử}
+\newcommand{\reporttitle}{BÁO CÁO ĐỒ ÁN GIỮA KỲ}
+
+\newcommand{\studentname}{23120200 - Nguyễn Hưng Thịnh \\ 23120222 - Lê Thành Công \\ 23120232 - Lê Thượng Đế \\ 23122028 - Vũ Nguyễn Trung Hiếu \\ 23122046 - Phan Ngọc Quân}
+\newcommand{\teachername}{TS. Bùi Tiến Lên\\Thầy Trần Huy Bân}
+
+\lhead{\reporttitle}
+\rhead{Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\\coursename}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\pagenumbering{roman}
+\input{content/title.tex}
+
+\tableofcontents
+\newpage
+
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{content/group-info.tex}
+\input{content/introduction-data.tex}
+\input{content/what-why.tex}
+\input{content/how-dashboard.tex}
+\input{content/discussion.tex}
+\input{content/references.tex}
+
+\end{document}

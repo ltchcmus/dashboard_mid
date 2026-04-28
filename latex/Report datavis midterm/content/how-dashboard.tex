@@ -1,0 +1,100 @@
+\section{Thiết kế dashboard và kết quả}
+
+\subsection{Tổng quan dashboard}
+Dashboard được chia thành các khối phân tích rõ ràng, giúp người đọc đi từ tổng quan đến chi tiết:
+\begin{itemize}[leftmargin=2em]
+    \item Khu vực bộ lọc: thể loại, nhà cung cấp, dải giá và mức chiết khấu.
+    \item Khu vực overview: phân bố doanh số và top nhà cung cấp.
+    \item Khu vực phân tích chi tiết: rating-review, độ dày sách, cấu trúc thể loại.
+    \item Các biểu đồ liên kết qua bộ lọc để khoanh vùng phân tích.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/Thinh/2.2.png}
+    \caption{Tổng quan dashboard (lát cắt Top 10 nhà cung cấp theo doanh số)}
+\end{figure}
+
+\subsection{Thiết kế từng biểu đồ thành phần}
+
+\subsubsection*{Biểu đồ 1 -- Phân bố số trang theo thể loại (Top 12)}
+
+\textbf{Mục tiêu:} So sánh cấu trúc số trang của các thể loại nổi bật.\\
+\textbf{Kênh thị giác:} Stacked bar; độ dài biểu diễn số lượng, màu biểu diễn nhóm số trang.\\
+\textbf{Lý do lựa chọn:} Giúp nhìn đồng thời quy mô và thành phần số trang theo từng thể loại.\\
+\textbf{Insight rút ra:} Một số thể loại có tỉ lệ sách mỏng cao, trong khi nhóm học thuật/thiếu nhi thường dày hơn.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{img/De/stacked_bar.png}
+    \caption{Phân bố số trang theo thể loại (Top 12)}
+\end{figure}
+
+\subsubsection*{Biểu đồ 2 -- Bản đồ nhiệt Rating vs Review}
+
+\textbf{Mục tiêu:} Xác định vùng rating và review tạo doanh số cao.\\
+\textbf{Kênh thị giác:} Heatmap; vị trí là rating-review, màu biểu diễn mức doanh số.\\
+\textbf{Insight rút ra:} Doanh số cao thường tập trung ở nhóm rating cao và review đủ lớn, thể hiện vai trò của đánh giá và mức độ quan tâm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{img/Thinh/1.1.png}
+    \caption{Bản đồ nhiệt Rating vs Review}
+\end{figure}
+
+\subsubsection*{Biểu đồ 3 -- Doanh số theo dải chiết khấu}
+
+Biểu đồ thể hiện doanh số trung bình theo các dải chiết khấu. Cách chia dải giúp so sánh nhóm khuyến mãi thấp, trung bình và cao, từ đó xác định “vùng chiết khấu hiệu quả” thay vì chỉ nhìn từng giá trị đơn lẻ.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{img/De/eda_figure_04_discount_sweetspot_sales.png}
+    \caption{Doanh số trung bình theo dải chiết khấu}
+\end{figure}
+
+\subsubsection*{Biểu đồ 4 -- Phân bố doanh số và biến đổi log}
+
+Doanh số có phân phối lệch mạnh, nên nhóm dùng biến đổi log để nhìn rõ phần “đuôi dài”. Biểu đồ giúp kiểm tra tính hợp lý của thao tác log và cho thấy sự tập trung của doanh số ở một số lượng nhỏ sản phẩm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{img/De/eda_figure_02_target_distribution_before_after_log.png}
+    \caption{Phân bố doanh số trước và sau khi log}
+\end{figure}
+
+\subsubsection*{Biểu đồ 5 -- Top nhà cung cấp theo doanh số}
+
+Biểu đồ xếp hạng cho thấy mức độ tập trung doanh số vào một số nhà cung cấp lớn. Đây là cơ sở để ưu tiên hợp tác, đàm phán chương trình khuyến mãi, hoặc điều chỉnh danh mục.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{img/Top15ThiPhan.png}
+    \caption{Top nhà cung cấp theo doanh số}
+\end{figure}
+
+\subsubsection*{Biểu đồ 6 -- Độ dày sách vs Doanh số}
+
+Biểu đồ phân tán cho thấy mối liên hệ giữa số trang và doanh số. Qua đó, nhóm quan sát được rằng độ dày không quyết định trực tiếp doanh số, mà còn phụ thuộc vào thể loại và mức độ quan tâm của người đọc.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.85\textwidth]{img/Quan/scatter.png}
+    \caption{Độ dày sách và doanh số}
+\end{figure}
+
+\subsection{Biện luận thiết kế tổng thể}
+\begin{itemize}[leftmargin=2em]
+    \item Bố cục ưu tiên tổng quan trước, sau đó đi sâu vào mối quan hệ giữa các biến.
+    \item Màu sắc tiết chế, tập trung vào độ tương phản để người đọc dễ so sánh.
+    \item Sử dụng thang log cho doanh số để giảm lệch và làm rõ phần đuôi dài.
+    \item Các biểu đồ chọn theo nguyên tắc: so sánh (bar), tương quan (scatter/heatmap), phân bố (histogram/violin).
+\end{itemize}
+
+\subsection{Kết quả chính rút ra từ dashboard}
+\begin{itemize}[leftmargin=2em]
+    \item Doanh số có phân phối long-tail, chỉ một nhóm nhỏ sản phẩm tạo phần lớn doanh thu.
+    \item Chiết khấu ở dải trung bình thường gắn với doanh số tốt hơn so với mức quá thấp hoặc quá cao.
+    \item Rating và review là tín hiệu mạnh để dự báo doanh số, đặc biệt ở vùng rating cao.
+    \item Doanh số tập trung vào một số nhà cung cấp lớn; phần còn lại phân tán theo long-tail.
+    \item Cấu trúc số trang khác nhau giữa các thể loại, gợi ý chiến lược sản phẩm theo danh mục.
+\end{itemize}

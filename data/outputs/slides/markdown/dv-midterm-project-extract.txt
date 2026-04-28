@@ -1,0 +1,75 @@
+1. Giới thiệu
+Mục tiêu của đồ án giữa kỳ là áp dụng khung lý thuyết What-Why-How để phân tích
+một vấn đề thực tế và xây dựng một Interactive Dashboard (Bảng điều khiển tương
+tác). Sinh viên sẽ làm việc theo nhóm để chọn một tập dữ liệu, xác định các câu hỏi phân
+tích, và thiết kế dashboard để trả lời những câu hỏi đó.
+Các mốc thời gian quan trọng:
+Thời gian đề xuất (Proposal): Tuần 3
+Yêu cầu nộp: Báo cáo ngắn gồm: Tên đề tài, Danh sách thành viên, Mô tả dữ liệu,
+và Các câu hỏi phân tích dự kiến.
+Thời gian trình bày (Presentation): Tuần 6
+Yêu cầu nộp: Báo cáo hoàn chỉnh gồm:
+Giới thiệu Dữ liệu
+Phân tích What-Why
+Thiết kế & Kết quả (The “How”)
+Thảo luận
+Báo cáo Dashboard
+2. Quy trình thực hiện
+Chọn một tập dữ liệu (dataset) có kích thước vừa phải và đủ độ phức tạp.
+Nguồn dữ liệu gợi ý: Kaggle, UCI Machine Learning Repository, Google Dataset
+Search, hoặc dữ liệu tự thu thập.
+Yêu cầu: Dữ liệu phải rõ ràng về nguồn gốc và ý nghĩa.
+Domain Situation: Mô tả ngữ cảnh của dữ liệu. Ai là người sử dụng? Họ cần tìm
+hiểu điều gì?
+Abstraction (Trừu tượng hóa):Đồ án Giữa kỳ: Phân tích & Thiết kế Trực quan hóa
+Dữ liệu
+Bước 1: Chọn Chủ đề và Dữ liệu
+Bước 2: Phân tích Bài toán (Domain & Abstraction)
+
+What (Data): Xác định các loại dữ liệu (Table, Network, Spatial…), các thuộc tính
+(Categorical, Ordered, Quantitative), và các đặc điểm khác.
+Why (Task): Xác định mục tiêu của việc trực quan hóa.
+How: Đề xuất các biểu đồ, kỹ thuật tương tác và bố cục (Layout) của Dashboard.
+Biện luận: Tại sao chọn biểu đồ này? Nó phù hợp với dữ liệu (What) và nhiệm vụ
+(Why) như thế nào?
+Ví dụ: Sử dụng biểu đồ Bar Chart để so sánh doanh thu (Quantitative) giữa các
+tháng (Ordered), sử dụng màu sắc để phân biệt vùng miền (Categorical).
+Phải áp dụng các nguyên tắc về Visual Encoding, Perception, và Color Theory.
+Sử dụng các công cụ hỗ trợ tạo Dashboard như: Tableau, PowerBI, Google Looker
+Studio, hoặc các framework lập trình như Streamlit, Dash (Python).
+Sản phẩm phải là một Dashboard hoàn chỉnh, tích hợp các biểu đồ khác nhau.
+Các biểu đồ cần được bố trí hợp lý trên một màn hình, có tính liên kết và tương tác.
+3. Một số Chủ đề Gợi ý
+Dưới đây là một số ý tưởng về chủ đề để các nhóm tham khảo:
+Kinh doanh & Thương mại điện tử (Business & E-commerce)
+Y tế & Sức khỏe cộng đồng (Healthcare)
+Môi trường & Biến đổi khí hậu (Environment)
+Xã hội & Giáo dục (Social Science & Education)
+Thể thao & Giải trí (Sports & Entertainment)
+4. Cấu trúc Báo cáo
+Sinh viên nộp một báo cáo (định dạng PDF) bao gồm:
+1. Tiêu đề & Thành viên: Tên đồ án, danh sách thành viên nhóm và bảng phân công
+công việc cụ thể (ai làm phần nào, mức độ đóng góp %).
+2. Giới thiệu Dữ liệu: Nguồn gốc, mô tả sơ lược, link tải dữ liệu.
+3. Phân tích What-Why:
+Bảng phân tích biến số (Variable types).
+Bước 3: Thiết kế Trực quan
+Bước 4: Cài đặt
+
+Danh sách câu hỏi/nhiệm vụ (Tasks).
+4. Thiết kế & Kết quả (The “How”):
+Screenshot toàn bộ Dashboard.
+Trình bày chi tiết từng biểu đồ thành phần.
+Giải thích thiết kế (Mark, Channel).
+Nhận xét (Insight) rút ra từ biểu đồ đó.
+5. Thảo luận:
+Những khó khăn gặp phải.
+Những hạn chế của thiết kế hiện tại và hướng phát triển.
+5. Tiêu chí Đánh giá
+Độ phức tạp và phù hợp của dữ liệu
+Phân tích What-Why chính xác
+Hiệu quả của thiết kế (How) và Biện luận (Design Rationale): Bố cục (Layout) của
+Dashboard có hợp lý không? Các biểu đồ có phối hợp hiệu quả không? Có tuân thủ
+nguyên tắc thị giác không?
+Kỹ thuật cài đặt: Dashboard hoàn chỉnh, đẹp, dễ đọc.
+Trình bày báo cáo: Rõ ràng, mạch lạc.
