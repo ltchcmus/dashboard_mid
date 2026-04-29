@@ -4,7 +4,6 @@ import math
 
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 
 from src.config.app_config import AppConfig
@@ -255,122 +254,6 @@ def ve_tab_toan_canh(
             )
             gia_tri_genre = trich_gia_tri_tu_su_kien_plotly(
                 su_kien_genre, ["customdata", "y"]
-            )
-
-    st.markdown("### Xu hướng số lượng phim theo thể loại")
-    trend_src = genres_loc.merge(
-        movies_loc[["show_id", "release_year"]], on="show_id", how="left"
-    ).dropna(subset=["release_year"])
-    if trend_src.empty:
-        st.info("Không có dữ liệu xu hướng theo năm sau khi lọc.")
-    else:
-        trend_base = trend_src.copy()
-        genre_counts = trend_base["the_loai"].value_counts()
-        unique_genres = int(genre_counts.shape[0])
-        if unique_genres == 0:
-            st.info("Không có dữ liệu thể loại sau khi lọc.")
-        else:
-            max_n = min(10, unique_genres)
-            if max_n >= 3:
-                options = list(range(3, max_n + 1))
-            else:
-                options = list(range(1, max_n + 1))
-            default_n = 6 if 6 in options else options[-1]
-            control_1, control_2, control_3 = st.columns([1.6, 1, 1])
-            with control_1:
-                top_n = st.selectbox(
-                    "Số thể loại hiển thị",
-                    options=options,
-                    index=options.index(default_n),
-                )
-            with control_2:
-                gom_khac = st.checkbox(
-                    "Gộp phần còn lại",
-                    value=unique_genres > top_n,
-                )
-            with control_3:
-                hien_tong = st.checkbox("Hiển thị tổng số phim", value=True)
-
-            top_genres = genre_counts.head(top_n).index.tolist()
-            if gom_khac and unique_genres > top_n:
-                trend_src = trend_src.assign(
-                    nhom_the_loai=trend_src["the_loai"].apply(
-                        lambda val: val if val in top_genres else "Khác"
-                    )
-                )
-                group_col = "nhom_the_loai"
-                nhom_hien_thi = top_genres + ["Khác"]
-            else:
-                trend_src = trend_src[trend_src["the_loai"].isin(top_genres)]
-                group_col = "the_loai"
-                nhom_hien_thi = top_genres
-
-            trend = (
-                trend_src.groupby(["release_year", group_col], as_index=False)[
-                    "show_id"
-                ]
-                .nunique()
-                .rename(
-                    columns={
-                        "release_year": "Năm",
-                        group_col: "Thể loại",
-                        "show_id": "Số lượng phim",
-                    }
-                )
-            )
-            trend["Năm"] = trend["Năm"].astype(int)
-            trend["Thể loại"] = pd.Categorical(
-                trend["Thể loại"], categories=nhom_hien_thi, ordered=True
-            )
-            trend = trend.sort_values(["Thể loại", "Năm"])
-            color_map = {}
-            for idx, theloai in enumerate(nhom_hien_thi):
-                if theloai == "Khác":
-                    color_map[theloai] = colors.neutral_grey
-                else:
-                    color_map[theloai] = palettes.vivid_genre[
-                        idx % len(palettes.vivid_genre)
-                    ]
-
-            fig_trend = px.line(
-                trend,
-                x="Năm",
-                y="Số lượng phim",
-                color="Thể loại",
-                markers=True,
-                color_discrete_map=color_map,
-                title="Số lượng phim theo thể loại qua các năm",
-            )
-            if hien_tong:
-                total = (
-                    trend_base.groupby("release_year", as_index=False)["show_id"]
-                    .nunique()
-                    .rename(
-                        columns={
-                            "release_year": "Năm",
-                            "show_id": "Tổng số phim",
-                        }
-                    )
-                )
-                fig_trend.add_trace(
-                    go.Scatter(
-                        x=total["Năm"],
-                        y=total["Tổng số phim"],
-                        mode="lines+markers",
-                        name="Tổng số phim",
-                        line={"color": colors.text_dark, "dash": "dash", "width": 2},
-                        marker={"color": colors.text_dark, "size": 6},
-                    )
-                )
-            fig_trend.update_layout(height=480, legend_title_text="Thể loại")
-            st.plotly_chart(
-                ap_dung_giao_dien_plotly(fig_trend, config), width="stretch"
-            )
-            caption_suffix = (
-                " (gộp phần còn lại)" if gom_khac and unique_genres > top_n else ""
-            )
-            st.caption(
-                f"Top {top_n} thể loại theo số lượng phim trong bộ lọc hiện tại{caption_suffix}."
             )
 
     dong_bo_loc_tuong_tac_tu_tab1(gia_tri_qg, gia_tri_lang, gia_tri_genre)
