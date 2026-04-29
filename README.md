@@ -16,6 +16,26 @@ pip install -r requirements.txt
 streamlit run src/main.py
 ```
 
+## Chạy bằng Docker
+
+Build image:
+
+```bash
+docker build -f Dockerfile -t dashboard-mid .
+```
+
+Run container:
+
+```bash
+docker run --rm -p 8501:8501 dashboard-mid
+```
+
+Nếu muốn cập nhật dữ liệu trên máy host:
+
+```bash
+docker run --rm -p 8501:8501 -v ./data:/app/data dashboard-mid
+```
+
 ## Dữ liệu đầu vào
 
 Ứng dụng đọc dữ liệu từ `data/processed/` theo cấu hình `app.data_dir` trong `config.yaml`.
@@ -47,6 +67,7 @@ Dashboard-Mid/
 |- docs/
 |  |- ai/
 |  |- human/
+|- notebooks/
 |- src/
 |  |- main.py
 |  |- config/
@@ -74,38 +95,3 @@ Dashboard-Mid/
 - `src/services/`: Logic nghiệp vụ cho dashboard, slide, script.
 - `src/prompts/`: Prompt template và quy ước output.
 - `src/utils/`: Hàm tiện ích tái sử dụng.
-
-## Chạy bằng Docker
-
-Build image:
-
-```bash
-docker build -f Dockerfile -t dashboard-mid .
-```
-
-Run container:
-
-```bash
-docker run --rm -p 8501:8501 dashboard-mid
-```
-
-Nếu muốn cập nhật dữ liệu trên máy host:
-
-```bash
-docker run --rm -p 8501:8501 -v ./data:/app/data dashboard-mid
-```
-
-## Chạy trực tiếp trên máy
-
-Yêu cầu tối thiểu:
-
-- Python 3.12 (khuyến nghị để đồng bộ với Dockerfile)
-- `pip` khả dụng trong môi trường Python
-- Dữ liệu đã xử lý trong `data/processed/`
-
-Chạy:
-
-```bash
-pip install -r requirements.txt
-streamlit run src/main.py
-```
