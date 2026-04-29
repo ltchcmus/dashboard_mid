@@ -3,6 +3,10 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
+ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+ENV STREAMLIT_SERVER_HEADLESS=true
+ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
+ENV STREAMLIT_SERVER_PORT=8501
 
 WORKDIR /app
 
@@ -13,4 +17,4 @@ COPY . .
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "src/main.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["streamlit", "run", "src/main.py"]
